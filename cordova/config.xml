@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.example.walle7" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Walle7</name>
+    <description>Walle7 is a cross-platform user interface for BitShares Blockchain</description>
+    <author email="pub@walle7.org" href="https://walle7.com">Walle7 Team</author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <preference name="cordova-custom-config-autorestore" value="true" />
+    <preference name="cordova-custom-config-stoponerror" value="true" />
+    <preference name="ShowSplashScreenSpinner" value="false" />
+    <preference name="AutoHideSplashScreen" value="true" />
+    <preference name="StatusBarDefaultScrollToTop" value="true" />
+    <preference name="StatusBarStyle" value="default" />
+    <preference name="StatusBarOverlaysWebView" value="true" />
+    <preference name="StatusBarBackgroundColor" value="#ffffff" />
+    <platform name="android">
+        <preference name="android-minSdkVersion" value="23" />
+        <preference name="android-targetSdkVersion" value="23" />
+        <preference name="AndroidLaunchMode" value="singleInstance" />
+        <preference name="orientation" value="portrait" />
+        <preference name="SplashMaintainAspectRatio" value="true" />
+        <preference name="SplashShowOnlyFirstTime" value="true" />
+        <preference name="FadeSplashScreenDuration" value="100" />
+        <icon density="ldpi" src="resources/android/icons/icon-36.png" />
+        <icon density="mdpi" src="resources/android/icons/icon-48.png" />
+        <icon density="hdpi" src="resources/android/icons/icon-72.png" />
+        <icon density="xhdpi" src="resources/android/icons/icon-96.png" />
+        <icon density="xxhdpi" src="resources/android/icons/icon-144.png" />
+        <icon density="xxxhdpi" src="resources/android/icons/icon-192.png" />
+        <splash density="hdpi" src="resources/android/splash/splash-480.png" />
+        <splash density="xhdpi" src="resources/android/splash/splash-720.png" />
+        <splash density="xxhdpi" src="resources/android/splash/splash-960.png" />
+        <splash density="xxxhdpi" src="resources/android/splash/splash-1280.png" />
+        <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application/activity">
+            <activity android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" />
+        </edit-config>
+    </platform>
+    <platform name="ios">
+        <preference name="deployment-target" value="10.0" />
+        <preference name="DisallowOverscroll" value="true" />
+        <preference name="FadeSplashScreenDuration" value="400" />
+        <splash src="resources/ios/splash/splashscreen@2x~universal~anyany.png" />
+        <icon height="29" src="resources/ios/icons/icon-29.png" width="29" />
+        <icon height="40" src="resources/ios/icons/icon-40.png" width="40" />
+        <icon height="50" src="resources/ios/icons/icon-50.png" width="50" />
+        <icon height="57" src="resources/ios/icons/icon-57.png" width="57" />
+        <icon height="58" src="resources/ios/icons/icon-58.png" width="58" />
+        <icon height="60" src="resources/ios/icons/icon-60.png" width="60" />
+        <icon height="72" src="resources/ios/icons/icon-72.png" width="72" />
+        <icon height="76" src="resources/ios/icons/icon-76.png" width="76" />
+        <icon height="80" src="resources/ios/icons/icon-80.png" width="80" />
+        <icon height="87" src="resources/ios/icons/icon-87.png" width="87" />
+        <icon height="100" src="resources/ios/icons/icon-100.png" width="100" />
+        <icon height="114" src="resources/ios/icons/icon-114.png" width="114" />
+        <icon height="120" src="resources/ios/icons/icon-120.png" width="120" />
+        <icon height="144" src="resources/ios/icons/icon-144.png" width="144" />
+        <icon height="152" src="resources/ios/icons/icon-152.png" width="152" />
+        <icon height="167" src="resources/ios/icons/icon-167.png" width="167" />
+        <icon height="180" src="resources/ios/icons/icon-180.png" width="180" />
+        <icon height="1024" src="resources/ios/icons/icon-1024.png" width="1024" />
+    </platform>
+    <plugin name="cordova-plugin-whitelist" spec="1" />
+    <plugin name="cordova-plugin-statusbar" spec="git+https://github.com/apache/cordova-plugin-statusbar.git" />
+    <plugin name="cordova-custom-config" spec="^5.0.3" />
+    <plugin name="cordova-plugin-window-background" spec="~1.1.2">
+        <variable name="WINDOW_BACKGROUND_COLOR" value="#ffffff" />
+    </plugin>
+    <plugin name="cordova-plugin-splashscreen" spec="~5.0.2" />
+    <engine name="ios" spec="^4.5.5" />
+    <engine name="android" spec="^7.1.4" />
+</widget>
