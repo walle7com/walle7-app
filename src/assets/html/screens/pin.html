@@ -1,0 +1,42 @@
+<div id="screenPin" class="screen screenFull screenY">
+	<div class="header-wide">
+		<a class="ic-logo-small"></a>
+	</div>
+	<div>
+		<div class="contentFix pincode">
+			<div class="pincodeBox">
+				<div class="alert">
+					<p>Create a Pin code</p>
+				</div>
+				<div class="numberfields">
+					<div><a></a></div>
+					<div><a></a></div>
+					<div><a></a></div>
+					<div><a></a></div>
+				</div>
+			</div>
+			<div class="numbers">
+				<a class="digit">1</a>
+				<a class="digit">2</a>
+				<a class="digit">3</a>
+				<a class="digit">4</a>
+				<a class="digit">5</a>
+				<a class="digit">6</a>
+				<a class="digit">7</a>
+				<a class="digit">8</a>
+				<a class="digit">9</a>
+				<a data-modal-show="modalPinExit" class="exit">Exit</a>
+				<a class="digit">0</a>
+				<a class="clean">&nbsp;</a>
+			</div>
+		</div>
+	</div>
+ 	<div id="modalPinExit" class="screenModal">
+    <a class="modalClose" data-modal-hide="modalPinExit"></a>
+		<div class="contentModal screenInBottom widthNarrow text-center">
+			<div><p>Do you really want to log in again with a password? This will remove your pin code, and you will have to create it again.</p></div>
+			<a id="pinShowLogin" class="modalLine text-red">Login with Password</a>
+			<a data-modal-hide="modalPinExit" class="modalLine">Cancel</a>
+		</div>
+	</div>
+</div>
