@@ -1,0 +1,55 @@
+<div id="screenSignup" class="screen screenFull screenX" data-swipe-right="screenWelcome">
+	<div class="header-wide">
+    <a class="ic-title-back" data-view-show="screenWelcome"></a>
+    <h2 class="lh-56">Sign up</h2>
+	</div>
+	<div class="content contentHeader">
+		<div class="contentFix positionFixCenter">
+			<div class="row up-4">
+				<div class="formErrorText op">Already exists!</div>
+				<label for="signupName">Create a username</label>
+      </div>
+      <div class="row">
+				<input id="signupName" type="login" maxlength="254" value="walle7-" spellcheck="false" class="input row-wide">
+				<div class="placeholder">username</div>
+			</div>
+			<div class="row up-4">
+				<label>Generated Password</label>
+      </div>
+      <div class="row">
+        <input id="signupPassword" type="text" spellcheck="false" class="input row-wide absolute-input-right">
+        <div class="absolute-input-right">
+            <a class="button row-wide areaCopy" data-address-copy-button=""></a>
+        </div>
+			</div>
+			<div class="row up-4">
+				<label>Paste Generated Password</label>
+      </div>
+      <div class="row">
+        <input id="signupPassword2" type="text" spellcheck="false" class="input row-wide absolute-input-right">
+        <div class="absolute-input-right">
+            <a class="button row-wide areaPaste" data-address-paste-button=""></a>
+        </div>
+			</div>
+			<div class="row up-3">
+				<label class="formCheck" for="signupAgreeFirst">
+					I have copied, written down or otherwise stored my password
+					<input id="signupAgreeFirst" type="checkbox">
+					<div class="indicator"></div>
+				</label>
+			</div>
+			<div class="row">
+				<label class="formCheck" for="signupAgreeSecond">
+					I understand that no one can recover my password if I lose it
+					<input id="signupAgreeSecond" type="checkbox">
+					<div class="indicator"></div>
+				</label>
+			</div>
+      <div class="row up-4">
+        <a id="signupVerifyButton" class="button-deep-normal row-wide">
+          <h3>Create Account</h3>
+        </a>
+      </div>
+		</div>
+	</div>
+</div>
