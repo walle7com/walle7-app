@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="initial-scale=1.0, width=device-width, height=device-height, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <meta name="HandheldFriendly" content="true"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="white"/>
+  <title>Walle7</title>
+  <link rel="icon" href="i/favicon.png"/>
+  <link rel="apple-touch-icon-precomposed" href="i/favicon_square.png"/>
+  <link rel="stylesheet" type="text/css" href="bundle.css"/>
+  <link rel="stylesheet" type="text/css" href="https://walle7.com/assets/css/assets.css"/>
+  <script defer src="bundle.js"></script>
+</head>
+<body>
+  <div class="preloader active">
+    <div class="icon">
+      <div class="coin">
+        <div class="front"></div>
+        <div class="back"></div>
+        <div class="side">
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<%= require('html-loader?attrs=false!./screens/onboarding.html') %>
+<%= require('html-loader?attrs=false!./screens/welcome.html') %>
+<%= require('html-loader?attrs=false!./screens/signup.html') %>
+<%= require('html-loader?attrs=false!./screens/signupVerify.html') %>
+<%= require('html-loader?attrs=false!./screens/login.html') %>
+<%= require('html-loader?attrs=false!./screens/pin.html') %>
+<%= require('html-loader?attrs=false!./screens/app.html') %>
+
+</body>
+</html>
