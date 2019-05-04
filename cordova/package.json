@@ -1,0 +1,29 @@
+{
+  "name": "walle7",
+  "displayName": "Walle7",
+  "version": "19.05.1",
+  "description": "Walle7 is a cross-platform user interface for BitShares Blockchain",
+  "license": "MPL 2.0",
+  "author": "Walle7 Team",
+  "homepage": "https://walle7.com",
+  "repository": "https://github.com/walle7com/",
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-window-background": {
+        "WINDOW_BACKGROUND_COLOR": "#ffffff"
+      },
+      "cordova-custom-config": {},
+      "cordova-plugin-splashscreen": {}
+    },
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  },
+  "dependencies": {
+    "cordova-android": "^7.1.4",
+    "cordova-custom-config": "^5.1.0",
+    "cordova-ios": "^4.5.5",
+    "xml2js": "^0.4.19"
+  }
+}
