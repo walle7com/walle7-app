@@ -1,0 +1,65 @@
+{
+  "name": "walle7",
+  "productName": "Walle7",
+  "displayName": "Walle7",
+  "version": "19.05.1",
+  "description": "Walle7 is a cross-platform user interface for BitShares Blockchain",
+  "license": "MPL 2.0",
+  "author": "Walle7 Team",
+  "homepage": "https://walle7.com",
+  "repository": "https://github.com/walle7com/",
+  "keywords": [
+    "walle7",
+    "wallet",
+    "bitshares"
+  ],
+  "main": "main.js",
+  "dependencies": {
+    "electron-window-state": "^5.0.3",
+    "node-gyp": "^3.8.0"
+  },
+  "devDependencies": {
+    "electron": "^4.0.4",
+    "electron-builder": "^20.38.5"
+  },
+  "scripts": {
+    "start": "electron ."
+  },
+  "build": {
+    "appId": "app.walle7",
+    "icon": "resources/icons/icon.icns",
+    "appImage": {
+      "systemIntegration": "doNotAsk"
+    },
+    "mac": {
+      "category": "public.app-category.finance"
+    },
+    "dmg": {
+      "title": "${productName}",
+      "background": "resources/background/background.tiff",
+      "contents": [
+        {
+          "x": 160,
+          "y": 160
+        },
+        {
+          "x": 416,
+          "y": 160,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Network",
+      "icon": "resources/icons/icon.png"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "resources/icons/icon.ico"
+    }
+  }
+}
