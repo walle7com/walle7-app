@@ -247,7 +247,7 @@ function generateKeyFromPassword(accountName, role, password) {
 }
 
 	async function updateHistory() {
-	    var hst = await Apis.instance().history_api().exec('get_account_history', [settings.user.id, '1.11.0', 100, '1.11.0']);	
+	    var hst = await Apis.instance().history_api().exec('get_account_history', [settings.user.id, '1.11.0', 100, '1.11.0']);
 	    var blocks = [];
 	
 	    settings.history = [];
@@ -453,8 +453,6 @@ function generateKeyFromPassword(accountName, role, password) {
 		    .show();
 	    }
 	}
-
-	
     }
 
     async function updateBalances() {
