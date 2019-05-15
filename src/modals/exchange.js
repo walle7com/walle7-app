@@ -369,6 +369,7 @@ module.exports = {
 	    }
 
 	    $('#modalExchangeCoins [data-view="fail"] [data-back-button]').attr('data-modal-arg', JSON.stringify(arg));
+	    $('#modalExchangeCoins [data-view="exchange"] [data-modal-arg]').attr('data-modal-arg', JSON.stringify(arg));
 
 	    var buyAmountInput = $('#modalExchangeCoins [data-buy-amount-input]');
 	    /*buyAmount.unbind('keyup.wex').bind('keyup.wex', function() {
@@ -557,9 +558,8 @@ module.exports = {
 		sellAmountInput.trigger('keyup');
 	    });
 
-	    $('#modalExchangeCoins [data-exchange-fix]').unbind('click.wex').bind('click.wex', async function() {
-
-		var k = app.generateKeyFromPassword(userAcc[0][1].account.name, 'active', settings.user.password);
+	    this.prepareTransaction = async (key) => {
+try {
 		var trx = new TransactionBuilder();
 
 		if (arg.buy.assetId == 9) {
@@ -648,14 +648,49 @@ module.exports = {
 		    trx.add_operation(op1);
 		}
 
-		trx.add_signer(k.privKey, k.pubKey);
-	    
+		trx.add_signer(key.privKey, key.pubKey);
+
+		return trx;
+} catch(e) {console.log(e);}
+	    }
+	},
+
+	confirm: async function(arg) {
+	    console.log(arg);
+
+	    arg = JSON.parse(arg);
+
+	    $('#modalExchangeCoins [data-password-error]').removeClass('active');
+	    $('#modalExchangeCoins [data-password-input]').val('');
+
+	    var prepareTransaction = this.prepareTransaction;
+
+	    $('#modalExchangeCoins [data-exchange-button]').unbind('click.wex').bind('click.wex', async function() {
+		var r = await Apis.instance().db_api().exec('get_account_by_name', [settings.user.name]);
+
+		if (!r) {
+		    $('#modalExchangeCoins [data-password-error]').addClass('active');
+		    return;
+		}
+
+		var key = app.generateKeyFromPassword(settings.user.name, 'active', $('#modalExchangeCoins [data-password-input]').val());
+
+		if (key.pubKey != r.active.key_auths[0][0]) {
+		    $('#modalExchangeCoins [data-password-error]').addClass('active');
+		    return;
+		}
+
+		$('#modalExchangeCoins [data-password-input]').val('');
+
 		try {
 		    $('#modalExchangeCoins .preloader').addClass('active');
-		
+
+		    var trx = await prepareTransaction(key);
+		    console.log(trx);
+
 		    var r = await trx.broadcast();
 		    console.log(r);
-		
+
 		    await app.updateBalances();
 		    app.renderBalances();
 	    
@@ -672,11 +707,13 @@ module.exports = {
 		    });
 		
 		    return false;
-		} catch(e) {
+		} catch (e) {
+		    console.log(e);
+
 		    await app.changeView('multi-view-modal-show', {
 			modalName: 'modalExchangeCoins',
 			viewName: 'fail'
-		    }, JSON.stringify(arg));
+		    });
 		
 		    return false;
 		}
