@@ -31,7 +31,8 @@
         </h3>
       </div>
       <div class="row">
-        <a class="button row-wide" data-multi-view-modal-show="modalDepositCoins" data-view-show2="main">
+        <!--<a class="button row-wide" data-multi-view-modal-show="modalDepositCoins" data-view-show2="main">-->
+	<a class="button row-wide" data-multi-view-modal-show="modalExchangeCoins" data-view-show2="confirm">
           <h3>Receive Funds</h3>
         </a>
         <a class="button row-half left" data-multi-view-modal-show="modalExchangeCoins" data-view-show2="main">
@@ -273,7 +274,7 @@
                 <i class="hover" data-name="">App version</i>
               </h5>
               <h5 class="absolute-top-right">
-                <i class="text-grey">19.05.1</i>
+                <i class="text-grey">19.05.2</i>
               </h5>
             </div>
           </li>
@@ -283,7 +284,7 @@
                 <i class="hover" data-name="">Build on</i>
               </h5>
               <h5 class="absolute-top-right">
-                <i class="text-grey">03 May 2019</i>
+                <i class="text-grey">10 May 2019</i>
               </h5>
             </div>
           </li>
@@ -933,6 +934,27 @@
             </a>
           </div>
         </div>
+        <div data-view="beet">
+          <div data-view-title style="display:none">
+            <h2 class="lh-56">Accept in Beet</h2>
+          </div>
+          <div class="modal-state">
+            <img src="i/ic_beet.png" class="svg-media" />
+          </div>
+          <div class="row up-1">
+            <h3 class="text-center">Accept Transaction in Beet</h3>
+          </div>
+          <div class="row up-4">
+            <p>Please make sure that Beet is open on your computer and unlocked.</p>
+            <p>Beet private keys are locally stored and encrypted, protected by a wallet master password.</p>
+            <p>If suddenly Beet is not turned on, then unlock it and click on the Resend button.</p>
+          </div>
+          <div class="row up-6">
+            <a class="button">
+              <h3>Resend Request</h3>
+            </a>
+          </div>
+        </div>
         <div data-view="insufficient">
           <div data-view-title="" style="display:none">
             <h2 class="lh-56">Insufficient funds</h2>
@@ -1199,6 +1221,30 @@
             <ul class="items items-1 ic-24b ic-arrow-right-a" data-buy-wallets></ul>
           </div>
         </div>
+        <div data-view="confirm">
+          <div data-view-title style="display:none">
+            <h2 class="lh-56">Confirm Transaction</h2>
+          </div>
+          <div class="modal-state">
+            <img src="i/ic_password.png" class="svg-media">
+          </div>
+          <div class="row up-1">
+            <h3 class="text-center">Type your password to complete</h3>
+          </div>
+          <div class="row up-4">
+            <p>Walle7 does not store your password and does not send it anywhere. The password is now required only for signing the transaction.</p>
+          </div>
+          <div class="row up-4">
+            <div class="formErrorText op" data-password-error>Wrong password!</div>
+            <label>Username: <b data-user>walle7-test</b></label>
+            <input data-password-input type="text" placeholder="Password" class="input row-wide hide-password" spellcheck="false" />
+          </div>
+          <div class="row up-4">
+            <a data-exchange-button class="button-deep-normal row-wide">
+              <h3>Confirm</h3>
+            </a>
+          </div>
+        </div>
         <div data-view="exchange">
           <div data-view-title style="display:none">
             <h2 class="lh-56">Sell <i data-sell-symbol>BTC</i> <i class="text-grey">⇄</i> Get <i data-buy-symbol>ETH</i> </h2>
@@ -1283,7 +1329,7 @@
               </ul>
             </div>
             <div class="row">
-              <a class="button-deep row-wide" data-exchange-fix>
+              <a class="button-deep row-wide" data-multi-view-modal-show="modalExchangeCoins" data-view-show2="confirm" data-modal-arg>
                 <h3>Fix the Price</h3>
               </a>
             </div>
@@ -1320,7 +1366,7 @@
             </div>
           </li>
         </div>
-        <div data-view="confirm">
+        <div data-view="verify">
           <div data-view-title style="display:none">
             <h2 class="lh-56">Confirm Withdraw</h2>
           </div>
@@ -1386,11 +1432,37 @@
             <a class="button row-half left margin0" data-multi-view-modal-show="modalWithdrawCoins" data-view-show2="withdraw">
               <h3>Edit</h3>
             </a>
-            <a class="button-deep row-half right" data-withdraw-button>
+            <a class="button-deep row-half right" data-multi-view-modal-show="modalWithdrawCoins" data-view-show2="confirm" data-modal-arg>
               <h3>Withdraw</h3>
             </a>
           </div>
         </div>
+
+        <div data-view="confirm">
+          <div data-view-title style="display:none">
+            <h2 class="lh-56">Confirm Transaction</h2>
+          </div>
+          <div class="modal-state">
+            <img src="i/ic_password.png" class="svg-media">
+          </div>
+          <div class="row up-1">
+            <h3 class="text-center">Type your password to complete</h3>
+          </div>
+          <div class="row up-4">
+            <p>Walle7 does not store your password and does not send it anywhere. The password is now required only for signing the transaction.</p>
+          </div>
+          <div class="row up-4">
+            <div class="formErrorText op" data-password-error>Wrong password!</div>
+            <label>Username: <b data-user>walle7-test</b></label>
+            <input data-password-input type="text" placeholder="Password" class="input row-wide hide-password" spellcheck="false" />
+          </div>
+          <div class="row up-4">
+            <a data-withdraw-button class="button-deep-normal row-wide">
+              <h3>Confirm</h3>
+            </a>
+          </div>
+        </div>
+
         <div data-view="firstdeposit">
           <div data-view-title style="display:none">
             <h2 class="lh-56">Insufficient funds</h2>
@@ -1692,7 +1764,7 @@
             </ul>
           </div>
           <div class="row">
-            <a class="button-deep row-wide" data-multi-view-modal-show="modalWithdrawCoins" data-view-show2="confirm" data-modal-arg>
+            <a class="button-deep row-wide" data-multi-view-modal-show="modalWithdrawCoins" data-view-show2="verify" data-modal-arg>
               <h3>Verify</h3>
             </a>
           </div>
