@@ -1071,6 +1071,21 @@ li.button:last-child {
   outline: none;
   transition: background 0.4s ease;
 }
+.hide-password {
+  font-family: 'text-security-disc';
+}
+.hide-password::-webkit-input-placeholder {
+  font-family: 'Open Sans';
+}
+.hide-password::-moz-placeholder {
+  font-family: 'Open Sans';
+}
+.hide-password:-ms-input-placeholder {
+  font-family: 'Open Sans';
+}
+.hide-password::placeholder {
+  font-family: 'Open Sans';
+}
 .row-wide {
   width: 100%;
 }
