@@ -7,7 +7,7 @@ var {Apis} = require('bitsharesjs-ws');
 module.exports = function() {
 	$('#loginButton').unbind('click.login').bind('click.login', async function() {
 	    $('#login-error').removeClass('active');
-	    $('#password-error').removeClass('active');
+	    //$('#password-error').removeClass('active');
 
 	    var r = await Apis.instance().db_api().exec('get_account_by_name', [$('#loginUsername').val()]);
 		
@@ -16,7 +16,7 @@ module.exports = function() {
 	        return;
 	    }
 
-	    var k = app.generateKeyFromPassword($('#loginUsername').val(), 'active', $('#loginPassword').val());
+	    /*var k = app.generateKeyFromPassword($('#loginUsername').val(), 'active', $('#loginPassword').val());
 
 	    if (k.pubKey == r.active.key_auths[0][0]) {
 		settings.user = {
@@ -31,6 +31,13 @@ module.exports = function() {
 	        app.changeView('view-show', 'screenPin');
 	    } else {
 		$('#password-error').addClass('active');
-	    }
+	    }*/
+
+	    settings.user = {
+		id: r.id,
+		name: r.name
+	    };
+	    $('#loginUsername').val('');
+	    app.changeView('view-show', 'screenPin');
 	});
 }
