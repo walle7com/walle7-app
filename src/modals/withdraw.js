@@ -340,11 +340,8 @@ try{
 	    }
 }catch(e){console.log(e);}
 	    
-	    this.prepareTransaction = async () => {
+	    this.prepareTransaction = async (activeKey, memoKey) => {
 try{
-		var k = app.generateKeyFromPassword(userAcc[0][1].account.name, 'memo', settings.user.password);
-		var k2 = app.generateKeyFromPassword(userAcc[0][1].account.name, 'active', settings.user.password);
-
 		if (arg.assetId == 9) {
 		    var dexAcc = await Apis.instance().db_api().exec('get_full_accounts', [[$('#modalWithdrawCoins [data-address-input]').val()], true]);
 
@@ -388,7 +385,7 @@ try{
 		    console.log(op[1].memo.message);
 
 		    var m = Aes.encrypt_with_checksum(
-        		k.privKey,
+        		memoKey.privKey,
             		op[1].memo.to,
             		op[1].memo.nonce,
             		op[1].memo.message
@@ -401,14 +398,14 @@ try{
 
 		var trx = new TransactionBuilder();
 		trx.add_operation(op);
-		trx.add_signer(k2.privKey, k2.pubKey);
+		trx.add_signer(activeKey.privKey, activeKey.pubKey);
 
 		return trx;
 }catch(e) {console.log(e);}
 	    }
 	},
 
-	confirm: async function(arg) {
+	verify: async function(arg) {
 	    console.log(arg);
 
 	    arg = JSON.parse(arg);
@@ -459,15 +456,41 @@ try{
 
 	    arg.edit = true;
 	    $('#modalWithdrawCoins [data-view-show2="withdraw"]').attr('data-modal-arg', JSON.stringify(arg));
+	    $('#modalWithdrawCoins [data-view-show2="confirm"]').attr('data-modal-arg', JSON.stringify(arg));
+	},
+
+	confirm: async function(arg) {
+	    console.log(arg);
+
+	    arg = JSON.parse(arg);
+
+	    $('#modalWithdrawCoins [data-password-error]').removeClass('active');
+	    $('#modalWithdrawCoins [data-password-input]').val('');
 
 	    var prepareTransaction = this.prepareTransaction;
 
 	    $('#modalWithdrawCoins [data-withdraw-button]').unbind('click.wdraw').bind('click.wdraw', async function() {
+		var r = await Apis.instance().db_api().exec('get_account_by_name', [settings.user.name]);
+
+		if (!r) {
+		    $('#modalWithdrawCoins [data-password-error]').addClass('active');
+		    return;
+		}
+
+		var activeKey = app.generateKeyFromPassword(settings.user.name, 'active', $('#modalWithdrawCoins [data-password-input]').val());
+		var memoKey = app.generateKeyFromPassword(settings.user.name, 'memo', $('#modalWithdrawCoins [data-password-input]').val());
+
+		if (activeKey.pubKey != r.active.key_auths[0][0]) {
+		    $('#modalWithdrawCoins [data-password-error]').addClass('active');
+		    return;
+		}
+
+		$('#modalWithdrawCoins [data-password-input]').val('');
 
 		try {
 		    $('#modalWithdrawCoins .preloader').addClass('active');
 
-		    var trx = await prepareTransaction();
+		    var trx = await prepareTransaction(activeKey, memoKey);
 		    console.log(trx);
 
 		    var r = await trx.broadcast();
@@ -490,6 +513,8 @@ try{
 		
 		    return false;
 		} catch (e) {
+		    console.log(e);
+
 		    await app.changeView('multi-view-modal-show', {
 			modalName: 'modalWithdrawCoins',
 			viewName: 'fail'
