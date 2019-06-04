@@ -9,31 +9,45 @@ var currentView;
 
 var gws = {
     '2': {
-	BASE: "https://ol-api1.openledger.info/api/v0/ol/support",
-	COINS_LIST: "/coins",
-	ACTIVE_WALLETS: "/active-wallets",
-	TRADING_PAIRS: "/trading-pairs",
-	DEPOSIT_LIMIT: "/deposit-limits",
-	ESTIMATE_OUTPUT: "/estimate-output-amount",
-	ESTIMATE_INPUT: "/estimate-input-amount",
-	PREFIX: 'OPEN.'
+	BASE: 'https://ol-api1.openledger.info/api/v0/ol/support',
+	COINS_LIST: '/coins',
+	ACTIVE_WALLETS: '/active-wallets',
+	TRADING_PAIRS: '/trading-pairs',
+	DEPOSIT_LIMIT: '/deposit-limits',
+	ESTIMATE_OUTPUT: '/estimate-output-amount',
+	ESTIMATE_INPUT: '/estimate-input-amount',
+	PREFIX: 'OPEN.',
+	ID: 'OPEN'
     },
 
     '3': {
-	BASE: "https://api.crypto-bridge.org/api/v1",
-	COINS_LIST: "/coins",
-	ACTIVE_WALLETS: "/wallets",
-	MARKETS: "/markets",
-	TRADING_PAIRS: "/trading-pairs",
-	PREFIX: 'BRIDGE.'
+	BASE: 'https://api.crypto-bridge.org/api/v1',
+	COINS_LIST: '/coins',
+	ACTIVE_WALLETS: '/wallets',
+	MARKETS: '/markets',
+	TRADING_PAIRS: '/trading-pairs',
+	PREFIX: 'BRIDGE.',
+	ID: 'BRIDGE'
     },
 
     '4': {
-	BASE: "https://api.gdex.io/adjust",
-	COINS_LIST: "/coins",
-	ACTIVE_WALLETS: "/active-wallets",
-	TRADING_PAIRS: "/trading-pairs",
-	PREFIX: 'GDEX.'
+	BASE: 'https://api.gdex.io/adjust',
+	COINS_LIST: '/coins',
+	ACTIVE_WALLETS: '/active-wallets',
+	TRADING_PAIRS: '/trading-pairs',
+	PREFIX: 'GDEX.',
+	ID: 'GDEX'
+    },
+
+    '5': {
+	BASE: 'https://dex-api.bitspark.io/api/v1',
+	COINS_LIST: '/coins',
+	ACTIVE_WALLETS: '/active-wallets',
+	TRADING_PAIRS: '/trading-pairs',
+	DEPOSIT_LIMIT: '/deposit-limits',
+	ESTIMATE_OUTPUT: '/estimate-output-amount',
+	ESTIMATE_INPUT: '/estimate-input-amount',
+	ID: 'SPARKDEX'
     }
 }
 
@@ -53,7 +67,8 @@ module.exports = {
     setInactiveTimer: setInactiveTimer,
     modalHandler: modalHandler,
     isTouchDevice: isTouchDevice,
-    gws: gws
+    gws: gws,
+    wait: wait
 }
 
 

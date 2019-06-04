@@ -1,0 +1,346 @@
+  <div id="modalCoin" class="screenModalFull">
+    <div id="gw-coin-balance-template" style="display:none">
+      <li class="expand-item ic-qr">
+        <div class="row">
+          <h3>
+            <i class="hover" data-amount>0.0003545</i> <i class="text-grey text-regular" data-symbol>BTC</i>
+          </h3>
+        </div>
+        <div class="row row-hidden">
+          <h4>
+            <i data-usd-amount>342</i> <i class="text-grey text-regular">USD</i>
+          </h4>
+        </div>
+        <div class="row row-after-hidden">
+          <h4>
+            <i class="text-grey text-regular">Secured by</i> <i data-name class="text-grey-black text-regular">GDEX</i>
+          </h4>
+        </div>
+      </li>
+    </div>
+    <div id="gw-coin-actions-template" style="display:none">
+      <div class="row data-qr" data-actions>
+        <div class="one-line">
+          <ul>
+            <li class="button" data-action-deposit data-modal-arg data-multi-view-modal-show="modalDepositCoins" data-view-show2="deposit">
+              <div class="row">
+                <h4>Receive</h4>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">To Wallet</h5>
+              </div>
+            </li>
+            <li class="button" data-action-transfer data-buy-arg data-multi-view-modal-show="modalExchangeCoins" data-view-show2="main">
+              <div class="row">
+                <h4>Buy <i data-symbol>BTC</i></h4>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Exchange</h5>
+              </div>
+            </li>
+            <li class="button" data-action-transfer data-sell-arg data-multi-view-modal-show="modalExchangeCoins" data-view-show2="selectBuyCoin">
+              <div class="row">
+                <h4>Sell <i data-symbol>BTC</i></h4>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Exchange</h5>
+              </div>
+            </li>
+            <li class="button" data-action-transfer data-modal-arg data-multi-view-modal-show="modalWithdrawCoins" data-view-show2="withdraw">
+              <div class="row">
+                <h4>Withdraw</h4>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Send <i data-symbol>BTC</i></h5>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="header modalHeader">
+      <a class="ic-title-close" data-modal-hide="modalCoin"></a>
+      <h2 class="lh-56" data-symbol></h2>
+    </div>
+    <div class="content modalContentHeader">
+      <div class="row" data-id>
+        <h1 data-name></h1>
+        <div class="icoin"></div>
+      </div>
+      <div class="row up-10 title">
+        <h2>Your Wallet</h2>
+        <a class="absolute-bottom-h2 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+      </div>
+      <div class="row">
+        <div class="one-line">
+          <ul id="gw-coin-balances-list">
+          </ul>
+        </div>
+      </div>
+      <div class="row title">
+        <h2>Pulse</h2>
+        <a class="absolute-bottom-h2 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+      </div>
+      <div class="row">
+        <div class="one-line">
+          <ul>
+            <li class="card">
+              <div class="row">
+                <h3>
+                  <i data-pulse-price0>6530</i><i class="text-grey" data-pulse-price1>.70</i> <i class="text-grey text-regular">USD</i></h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Market Price</h5>
+              </div>
+            </li>
+            <li class="card">
+              <div class="row">
+                <h3>
+                  <i class="text-red" data-pulse-change>-1.24</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Change 24h</h5>
+              </div>
+            </li>
+            <li class="card">
+              <div class="row">
+                <h3>
+                  <i data-pulse-cap>113.66 B</i> <i class="text-grey text-regular">USD</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Capitalization</h5>
+              </div>
+            </li>
+            <li class="card">
+              <div class="row">
+                <h3>
+                  <i data-pulse-volume>4.61 B</i> <i class="text-grey text-regular">USD</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Volume 24h</h5>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="row up-9 title">
+        <h2>Transactions</h2>
+        <a class="absolute-bottom-h2 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+      </div>
+      <div class="row" id="coin-history-items">
+      </div>
+      <div class="row" id="coin-history-empty">
+        <p class="text-grey">No transactions found. Here you will see the history when you will be making deposits, exchanges or sending asset.</p>
+      </div>
+      <div class="row title up-2">
+        <h2>About <i data-name>Bitcoin</i></h2>
+        <a class="absolute-bottom-h2 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+      </div>
+      <div class="row">
+        <div class="one-line">
+          <ul>
+            <li class="card shadow" data-website-card>
+              <a data-website target="_blank">
+                <div class="row">
+                  <div class="icoin"></div>
+                </div>
+                <div class="row">
+                  <h3 class="spacing">
+                    <i data-website-name>bitcoin.org</i>
+                  </h3>
+                </div>
+                <div class="row">
+                  <h5 class="text-grey">Website</h5>
+                </div>
+              </a>
+            </li>
+            <li class="card ic-github" data-github>
+              <a data-href target="_blank">
+                <div class="row">
+                  <div class="ic-24p"></div>
+                </div>
+                <div class="row">
+                  <h3>
+                    <i>Github</i>
+                  </h3>
+                </div>
+                <div class="row">
+                  <h5 class="text-grey">Open Source</h5>
+                </div>
+              </a>
+            </li>
+            <li class="card ic-type">
+              <div class="row">
+                <div class="ic-24p"></div>
+              </div>
+              <div class="row">
+                <h3 class="spacing">
+                  <i data-asset-type>Coin</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Asset Type</h5>
+              </div>
+            </li>
+            <li class="card ic-supply">
+              <div class="row">
+                <div class="ic-24p"></div>
+              </div>
+              <div class="row">
+                <h3>
+                  <i data-supply>21.00 B</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Supply</h5>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="row up-1 title">
+        <h2>Social Links</h2>
+        <a class="absolute-bottom-h2 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+      </div>
+      <div class="row">
+        <div class="one-line">
+          <ul data-social-links>
+            <li class="card ic-bitcointalk" style="display:none">
+              <a target="_blank">
+              <div class="row">
+                <div class="ic-24p"></div>
+              </div>
+              <div class="row">
+                <h3>
+                  <i>Bitcointalk</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Discussion</h5>
+              </div>
+              </a>
+            </li>
+            <li class="card ic-twitter" style="display:none">
+              <a target="_blank">
+              <div class="row">
+                <div class="ic-24p"></div>
+              </div>
+              <div class="row">
+                <h3>
+                  <i>Twitter</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Official News</h5>
+              </div>
+              </a>
+            </li>
+            <li class="card ic-reddit" style="display:none">
+              <a target="_blank">
+              <div class="row">
+                <div class="ic-24p"></div>
+              </div>
+              <div class="row">
+                <h3>
+                  <i>Reddit</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Community</h5>
+              </div>
+              </a>
+            </li>
+            <li class="card ic-discord" style="display:none">
+              <a target="_blank">
+              <div class="row">
+                <div class="ic-24p"></div>
+              </div>
+              <div class="row">
+                <h3>
+                  <i>Discord</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Team Chat</h5>
+              </div>
+              </a>
+            </li>
+            <li class="card ic-telegram" style="display:none">
+              <a target="_blank">
+              <div class="row">
+                <div class="ic-24p"></div>
+              </div>
+              <div class="row">
+                <h3>
+                  <i>Telegram</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Group News</h5>
+              </div>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="row up-1 title">
+        <h2>Properties</h2>
+        <a class="absolute-bottom-h2 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+      </div>
+      <div class="row">
+        <div class="one-line">
+          <ul>
+            <li class="card">
+              <div class="row">
+                <h3 class="spacing">
+                  <i data-algorithm>Ethash</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Algorithm</h5>
+              </div>
+            </li>
+            <li class="card">
+              <div class="row">
+                <h3>
+                  <i data-proof-type>PoW</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Consensus</h5>
+              </div>
+            </li>
+            <li class="card">
+              <div class="row">
+                <h3>
+                  <i data-mineable style="display:none">Mineable</i>
+                  <i data-not-mineable style="display:none">Non-Minable</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Currency</h5>
+              </div>
+            </li>
+            <li class="card">
+              <div class="row">
+                <h3>
+                  <i data-type-mineable style="display:none">Still Mined</i>
+                  <i data-type-not-mineable style="display:none">None</i>
+                  <i data-type-premined style="display:none">Pre-Mined</i>
+                </h3>
+              </div>
+              <div class="row">
+                <h5 class="text-grey">Mining Status</h5>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="row up-10">
+        <p class="text-grey">Pulse is syncronized with more than 200 exchanges every 5 minutes. Volume weighted average price information is aggregated value of market providers: <a class="text-bold link" href="https://coinmarketcap.com" target="_blank">CoinMarketCap</a> and <a class="text-bold link" href="https://cryptocompare.com" target="_blank">CryptoCompare</a>.</p>
+      </div>
+    </div>
+  </div>

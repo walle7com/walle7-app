@@ -78,8 +78,8 @@ var nodes = [
     'wss://ws.winex.pro'
 ];
 
-//var nodeUrl = nodes[nodes.length * Math.random() | 0];
-var nodeUrl = 'wss://ap-southeast-1.bts.crypto-bridge.org';
+var nodeUrl = nodes[nodes.length * Math.random() | 0];
+//var nodeUrl = 'wss://ap-southeast-1.bts.crypto-bridge.org';
 
 var _connectionManager = new Manager({
     url: nodeUrl,
@@ -92,6 +92,7 @@ var _connectionManager = new Manager({
     },
     urlChangeCallback: url => {
 	console.log("fallback to new url:", url);
+	//nodeUrl = url;
     }
 });
 

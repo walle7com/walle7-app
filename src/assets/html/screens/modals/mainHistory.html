@@ -1,0 +1,69 @@
+    <div class="doubleRight">
+      <div class="row up-7 title">
+        <h2>Transactions</h2>
+        <a class="absolute-bottom-h2 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+      </div>
+      <div class="row" data-trx-history-placeholder style="display:none">
+        <div class="row image-width">
+            <img src="i/i_shibe.png">
+        </div>
+        <div class="row up-4">
+          <h2 class="text-center">Wow, such empty!</h2>
+        </div>
+        <div class="row up-4">        
+          <p class="text-grey">Thank you for your interest in Developer Preview. We remind you that Walle7 is a UI for the BitShares Blockchain and all operations take place inside the decentralized nodes.</p>
+          <p class="text-grey">After successful deposit to your account with any supported coin, this text will disappear and the history of your transactions will be in its place. Try to top up your wallet with any currency or observe how coin profiles look.</p>
+          <p class="text-grey">If you can help with advice or have any suggestions, we hope to talk in <a class="text-bold link" data-modal-show="modalDiscord">Discord chat</a>.</p>
+        </div>
+        <div class="row up-3 max">
+          <a class="button row-half left margin0" data-modal-show="modalWallets">
+            <h3>Show Coins</h3>
+          </a>
+          <a class="button-deep row-half right" data-multi-view-modal-show="modalDepositCoins" data-view-show2="main">
+            <h3>Deposit</h3>
+          </a>
+        </div>
+      </div>
+      <div class="row banner" id="invest-banner" style="display:none">
+        <h3 class="text-center lh-48">
+          <i class="text-regular">Help</i> <i>Walle7</i> <i class="text-regular">grow</i>
+        </h3>
+        <a class="button-deep" data-modal-show="modalDiscord">
+          <h3>Participate</h3>
+        </a>
+      </div>
+      <div id="history-date-template" style="display:none">
+        <div class="date"><p>Today</p></div>
+      </div>
+      <div id="history-transfer-item-template" style="display:none">
+        <li class="ic-received" data-modal-show data-modal-arg>
+          <div class="row nowrap">
+            <h3>
+              <i class="text-green" data-amount>+100</i> <i data-symbol>DOGE</i>
+            </h3>
+          </div>
+          <div class="row">
+            <h5 class="text-grey">
+              <i data-type>Received</i> at <i data-time>10:52</i>
+            </h5>
+          </div>
+        </li>
+      </div>
+      <div id="history-exchange-item-template" style="display:none">
+        <li class="ic-changed" data-modal-show data-modal-arg>
+          <div class="row nowrap">
+            <h3>
+              <i class="text-red" data-send-amount>-7453</i> 
+              <i data-send-symbol>DOGE</i> 
+              <i class="text-grey">⇄</i> 
+              <i class="text-green" data-receive-amount>+0.66627</i> 
+              <i data-receive-symbol>BTC</i>
+            </h3>
+          </div>
+          <div class="row">
+            <h5 class="text-grey">Changed at <i data-time>10:52</i></h5>
+          </div>
+        </li>
+      </div>
+      <div id="history-items"></div>
+    </div>

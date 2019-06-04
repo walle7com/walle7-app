@@ -1,0 +1,42 @@
+  <div id="modalWithdrawCoins" class="screenModalDynamic">
+    <a class="modalClose" data-modal-hide="modalWithdrawCoins"></a>
+    <div class="contentModal widthMiddle">
+      <div class="header modalHeader">
+        <a class="ic-title-close" data-modal-hide="modalWithdrawCoins"></a>
+        <div data-title></div>
+      </div>
+      <div class="content modalContentHeader">
+        <div data-coin-template style="display:none">
+          <li class="fade-in" data-multi-view-modal-show="modalWithdrawCoins" data-view-show2="selectWallet">
+            <div class="row">
+              <h3>
+                <i class="hover" data-name>Bitcoin</i>
+              </h3>
+            </div>
+            <div class="row">
+              <h5>
+                <i data-amount>0.0004322</i> 
+                <i class="text-grey" data-symbol>BTC</i>
+              </h5>
+              <h5 class="absolute-top-right">
+                <i class="text-grey" data-usd-amount>242</i> 
+                <i class="text-grey">USD</i>
+              </h5>
+            </div>
+          </li>
+        </div>
+
+	<% include ./withdraw/beet.html %>
+        <% include ./withdraw/verify.html %>
+        <% include ./withdraw/confirm.html %>
+        <% include ./withdraw/firstDeposit.html %>
+        <% include ./withdraw/insufficient.html %>
+        <% include ./withdraw/success.html %>
+        <% include ./withdraw/fail.html %>
+        <% include ./withdraw/main.html %>
+        <% include ./withdraw/selectWallet.html %>
+        <% include ./withdraw/withdraw.html %>
+
+      </div>
+    </div>
+  </div>

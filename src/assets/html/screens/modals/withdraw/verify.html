@@ -1,0 +1,71 @@
+        <div data-view="verify">
+          <div data-view-title style="display:none">
+            <h2 class="lh-56">Confirm Withdraw</h2>
+          </div>
+          <div class="modal-state">
+            <img src="i/ic_confirm.png" class="svg-media" />
+          </div>
+          <div class="row title">
+            <h3>Send ETH to address</h3>
+            <a class="absolute-bottom-h3 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+          </div>
+          <div class="row up-7 row-third-left-image">
+            <div class="image-row-left ic-qr-back">
+              <img data-address-qr />
+            </div>
+            <div class="row">
+              <input type="text" spellcheck="false" class="input row-wide absolute-input-right" data-address-input2>
+              <div class="absolute-input-right">
+                <a class="button row-wide areaCopy" data-address-copy-button=""></a>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <ul class="items items-3 ic-24b">
+              <li class="c-2" data-id="">
+                <div class="row">
+                  <h3>
+                    <i>Amount</i>
+                  </h3>
+                  <a class="absolute-bottom-h3 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+                </div>
+                <div class="row">
+                  <h5>
+                    <i data-amount="">0.011</i> 
+                    <i class="text-grey" data-symbol="">ETH</i>
+                  </h5>
+                  <h5 class="absolute-top-right">
+                    <i class="text-grey" data-usd-amount="">1.43</i> 
+                    <i class="text-grey">USD</i>
+                  </h5>
+                </div>
+              </li>
+              <li class="ic-fee">
+                <div class="row">
+                  <h3>
+                    <i>Service Fee</i>
+                  </h3>
+                  <a class="absolute-bottom-h3 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+                </div>
+                <div class="row">
+                  <h5>
+                    <i data-service-fee="">0</i> 
+                    <i class="text-grey" data-symbol="">ETH</i>
+                  </h5>
+                  <h5 class="absolute-top-right">
+                    <i class="text-grey" data-usd-service-fee>0</i> 
+                    <i class="text-grey">USD</i>
+                  </h5>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="row">
+            <a class="button row-half left margin0" data-multi-view-modal-show="modalWithdrawCoins" data-view-show2="withdraw">
+              <h3>Edit</h3>
+            </a>
+            <a class="button-deep row-half right" data-multi-view-modal-show="modalWithdrawCoins" data-view-show2="confirm" data-modal-arg>
+              <h3>Withdraw</h3>
+            </a>
+          </div>
+        </div>

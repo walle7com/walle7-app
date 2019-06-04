@@ -1,0 +1,86 @@
+        <div data-view="withdraw">
+          <div data-view-title style="display:none">
+            <h2 class="lh-56">Withdraw <i data-name>Ethereum</i></h2>
+          </div>
+          <div class="row title">
+            <h3>Send <i data-symbol>BTC</i> to address</h3>
+            <a class="absolute-bottom-h2 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+          </div>
+          <div class="row up-7">
+            <div class="row">
+              <input type="text" spellcheck="false" class="input row-wide" placeholder="Paste address" value="" data-address-input />
+            </div>
+          </div>
+          <div class="row title up-4">
+            <h3>Quantity in <i data-symbol>BTC</i></h3>
+            <a class="absolute-bottom-h2 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+          </div>
+          <div class="row up-13">
+            <div class="row">
+              <input type="text" spellcheck="false" class="absolute-input-right input row-wide" placeholder="0.0" value="" data-amount-input />
+              <div class="absolute-input-right">
+                <h5 class="input-h5 text-grey">
+                  <i data-usd-amount>0.00</i>
+                  <i>USD</i>
+                </h5>
+              </div>
+            </div>
+            <div class="row up-4">
+              <h5>
+                <i class="text-grey">Min.</i> 
+                <i class="text-underline" data-min-amount>0.0006</i> 
+                <i class="text-grey" data-symbol>BTC</i>
+              </h5>
+              <h5 class="absolute-top-right">
+                <i class="text-grey">Max.</i> 
+                <i class="text-underline" data-max-amount>0.059</i> 
+                <i class="text-grey" data-symbol>BTC</i>
+              </h5>
+            </div>
+          </div>
+          <div class="row">
+            <ul class="items items-3 ic-24b">
+              <li class="c-1" data-id>
+                <div class="row">
+                  <h3>
+                    <i>Wallet Balance</i>
+                  </h3>
+                  <a class="absolute-bottom-h3 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+                </div>
+                <div class="row">
+                  <h5>
+                    <i data-balance>0.0018</i>
+                    <i class="text-grey" data-symbol>BTC</i>
+                  </h5>
+                  <h5 class="absolute-top-right">
+                    <i class="text-grey" data-usd-balance>11.56</i> 
+                    <i class="text-grey">USD</i>
+                  </h5>
+                </div>
+              </li>
+              <li class="ic-fee">
+                <div class="row">
+                  <h3>
+                    <i>Service Fee</i>
+                  </h3>
+                  <a class="absolute-bottom-h3 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+                </div>
+                <div class="row">
+                  <h5>
+                    <i data-service-fee>0</i> 
+                    <i class="text-grey" data-symbol>BTC</i>
+                  </h5>
+                  <h5 class="absolute-top-right">
+                    <i class="text-grey" data-usd-service-fee>0</i> 
+                    <i class="text-grey">USD</i>
+                  </h5>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="row">
+            <a class="button-deep row-wide" data-multi-view-modal-show="modalWithdrawCoins" data-view-show2="verify" data-modal-arg>
+              <h3>Verify</h3>
+            </a>
+          </div>
+        </div>

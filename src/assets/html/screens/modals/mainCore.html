@@ -1,0 +1,62 @@
+    <div class="doubleLeft">
+      <div class="row up-1">
+        <div class="badge connected">
+          <div class="live"></div>
+          <i class="light">Online</i>
+        </div>
+        <!--
+        <div class="badge connecting">
+          <div class="live"></div> 
+          <i class="light">Connecting</i>
+        </div>
+        -->
+        <h3 class="text-mid">Total Balance</h3>
+        <h1>
+          <i class="text-huge" id="balance-btc">0.000000</i> 
+          <i class="text-grey text-regular">BTC</i>
+        </h1>
+        <h3>
+          <i id="balance-usd">0.00</i> 
+          <i class="text-grey text-regular">USD, based on the exchange rates</i>
+        </h3>
+      </div>
+      <div class="row">
+        <a class="button row-wide" data-multi-view-modal-show="modalDepositCoins" data-view-show2="main">
+          <h3>Receive Funds</h3>
+        </a>
+        <a class="button row-half left" data-multi-view-modal-show="modalExchangeCoins" data-view-show2="main">
+          <h3>Exchange</h3>
+        </a>
+        <a class="button row-half right" data-multi-view-modal-show="modalWithdrawCoins" data-view-show2="main">
+          <h3>Withdraw</h3>
+        </a>
+      </div>
+      <div class="row up-3 title">
+        <h2>
+          <a data-modal-show="modalWallets">My Wallets</a>
+        </h2>
+        <a class="absolute-bottom-h2 link" data-modal-show="modalWallets">Show All</a>
+      </div>
+      <div class="row up-8">
+        <ul class="items items-1 ic-24b ic-arrow-right-a" id="coins-list"></ul>
+      </div>
+      <div id="coins-list-template" style="display:none">
+        <li data-modal-show="modalCoin" data-attr-symbol>
+          <div class="row">
+            <h3>
+              <i class="hover" data-name>Bitcoin</i>
+            </h3>
+          </div>
+          <div class="row">
+            <h5>
+              <i data-amount>0.0004322</i> 
+              <i class="text-grey" data-symbol>BTC</i>
+            </h5>
+            <h5 class="absolute-top-right">
+              <i class="text-grey" data-usd-amount>242</i> 
+              <i class="text-grey">USD</i>
+            </h5>
+          </div>
+        </li>
+      </div>
+    </div>

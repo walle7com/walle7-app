@@ -1,0 +1,96 @@
+        <div data-view="deposit">
+          <div data-view-title style="display:none">
+            <h2 class="lh-56">Deposit <i data-name>Ethereum</i></h2>
+          </div>
+          <div class="row">
+            <div class="row title">
+              <h3>Your <i data-symbol>BTC</i> Address</h3>
+              <a class="absolute-bottom-h3 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+            </div>
+            <div class="row up-7 row-third-left-image">
+              <div class="image-row-left ic-qr-back">
+                <img data-address-qr />
+              </div>
+              <div class="row">
+                <input type="text" spellcheck="false" class="input row-wide absolute-input-right" value="" data-address-input />
+                <div class="absolute-input-right">
+                  <a class="button row-wide areaCopy" data-address-copy-button></a>
+                </div>
+              </div>
+            </div>
+            <div class="row" data-deposit-input-memo>
+              <div class="row up-4 title">
+                <h3>Important Memo</h3>
+                <a class="absolute-bottom-h3 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+              </div>
+              <div class="row up-7 row-third-left-image">
+                <div class="image-row-left ic-qr-back">
+                  <img data-memo-qr />
+                </div>
+                <div class="row">
+                  <input type="text" spellcheck="false" class="input row-wide absolute-input-right" value="" data-memo-input />
+                  <div class="absolute-input-right">
+                    <a class="button row-wide areaCopy"></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <ul class="items items-3 ic-24b">
+                <li class="c-1" data-id>
+                  <div class="row">
+                    <h3>
+                      <i>Minimum Deposit</i>
+                    </h3>
+                    <a class="absolute-bottom-h3 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+                  </div>
+                  <div class="row">
+                    <h5>
+                      <i data-min-amount>0.0018</i> 
+                      <i class="text-grey" data-symbol>BTC</i>
+                    </h5>
+                    <h5 class="absolute-top-right">
+                      <i class="text-grey" data-min-usd-amount>11.56</i> 
+                      <i class="text-grey">USD</i>
+                    </h5>
+                  </div>
+                </li>
+                <li class="ic-fee">
+                  <div class="row">
+                    <h3>
+                      <i>Service Fee</i>
+                    </h3>
+                    <a class="absolute-bottom-h3 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+                  </div>
+                  <div class="row">
+                    <h5>
+                      <i data-fee>0</i> 
+                      <i class="text-grey" data-symbol>BTC</i>
+                    </h5>
+                    <h5 class="absolute-top-right">
+                      <i class="text-grey">0</i> 
+                      <i class="text-grey">USD</i>
+                    </h5>
+                  </div>
+                </li>
+                <li class="ic-attention">
+                  <div class="row">
+                    <h3>
+                      <i>Important</i>
+                    </h3>
+                    <a class="absolute-bottom-h3 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+                  </div>
+                  <div class="row">
+                    <h5>Sending less than <i data-min-amount>0.0018</i> <i data-symbol>BTC</i> or other asset to your wallet may result in loss of deposit.</h5>
+                    <h5 class="row up-4">Transaction status tracks on the <a class="text-bold link" data-explorer-link target="_blank">Blockchain Explorer</a>. Deposit is secured by <i data-wallet-name>Openledger</i>.</h5>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="row">
+              <a class="button-deep row-wide" data-modal-hide="modalDepositCoins">
+                <h3>Done</h3>
+              </a>
+            </div>
+          </div>
+        </div>

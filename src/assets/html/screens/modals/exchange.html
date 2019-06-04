@@ -1,0 +1,62 @@
+  <div id="modalExchangeCoins" class="screenModalDynamic">
+    <a class="modalClose" data-modal-hide="modalExchangeCoins"></a>
+    <div class="contentModal widthMiddle">
+      <div class="header modalHeader">
+        <a class="ic-title-close" data-modal-hide="modalExchangeCoins"></a>
+        <div data-title></div>
+      </div>
+      <div class="content modalContentHeader">
+        <div data-sell-coin-template style="display:none">
+          <li class="fade-in" data-multi-view-modal-show="modalExchangeCoins" data-view-show2="selectSellWallet">
+            <div class="row">
+              <h3>
+                <i class="hover" data-name>Bitcoin</i>
+              </h3>
+            </div>
+            <div class="row">
+              <h5>
+                <i data-amount>0.0004322</i> 
+                <i class="text-grey" data-symbol>BTC</i>
+              </h5>
+              <h5 class="absolute-top-right">
+                <i class="text-grey" data-usd-amount>242</i> 
+                <i class="text-grey">USD</i>
+              </h5>
+            </div>
+          </li>
+        </div>
+        <div data-buy-coin-template style="display:none">
+          <li class="fade-in" data-multi-view-modal-show="modalExchangeCoins" data-view-show2="selectBuyWallet">
+            <div class="row">
+              <h3>
+                <i class="hover" data-name>Bitcoin</i>
+              </h3>
+            </div>
+            <div class="row">
+              <h5>
+                <i data-amount>0.0004322</i> 
+                <i class="text-grey" data-symbol>BTC</i>
+              </h5>
+              <h5 class="absolute-top-right">
+                <i class="text-grey" data-usd-amount>242</i> 
+                <i class="text-grey">USD</i>
+              </h5>
+            </div>
+          </li>
+        </div>
+
+        <% include ./exchange/firstDeposit.html %>
+        <% include ./exchange/beet.html %>
+        <% include ./exchange/insufficient.html %>
+        <% include ./exchange/success.html %>
+        <% include ./exchange/fail.html %>
+        <% include ./exchange/main.html %>
+        <% include ./exchange/selectSellWallet.html %>
+        <% include ./exchange/selectBuyCoin.html %>
+        <% include ./exchange/selectBuyWallet.html %>
+        <% include ./exchange/confirm.html %>
+        <% include ./exchange/exchange.html %>
+
+      </div>
+    </div>
+  </div>

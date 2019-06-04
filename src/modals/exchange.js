@@ -4,7 +4,9 @@ var app = require('../app');
 
 var {Apis} = require('bitsharesjs-ws');
 var {TransactionBuilder} = require('bitsharesjs');
+require('@beetapp/beet-js');
 
+var beetApp;
 
 module.exports = {
 	main: async function(arg) {
@@ -370,6 +372,7 @@ module.exports = {
 
 	    $('#modalExchangeCoins [data-view="fail"] [data-back-button]').attr('data-modal-arg', JSON.stringify(arg));
 	    $('#modalExchangeCoins [data-view="exchange"] [data-modal-arg]').attr('data-modal-arg', JSON.stringify(arg));
+	    $('#modalExchangeCoins [data-view="confirm"] [data-modal-arg]').attr('data-modal-arg', JSON.stringify(arg));
 
 	    var buyAmountInput = $('#modalExchangeCoins [data-buy-amount-input]');
 	    /*buyAmount.unbind('keyup.wex').bind('keyup.wex', function() {
@@ -558,12 +561,10 @@ module.exports = {
 		sellAmountInput.trigger('keyup');
 	    });
 
-	    this.prepareTransaction = async (key) => {
+	    this.prepareTransaction = async (trx, key) => {
 try {
-		var trx = new TransactionBuilder();
-
 		if (arg.buy.assetId == 9) {
-		    var op = [1, {
+		    var op = {
 			fee: {
 			    amount: fee * 10 ** cer[0].precision + 1,
 			    asset_id: sellBtsId
@@ -579,12 +580,12 @@ try {
 			},
 			expiration: '2099-09-18T23:00:00',
 			fill_or_kill: true
-		    }];
+		    };
 
 		    console.log(op);
-		    trx.add_operation(op);
+		    trx.add_type_operation('limit_order_create', op);
 		} else if (arg.sell.assetId == 9) {
-		    var op = [1, {
+		    var op = {
 			fee: {
 			    amount: fees[0].parameters.current_fees.parameters[1][1].fee,
 			    asset_id: '1.3.0'
@@ -600,12 +601,12 @@ try {
 			},
 			expiration: '2099-09-18T23:00:00',
 			fill_or_kill: true
-		    }];
+		    };
 		    
 		    console.log(op);
-		    trx.add_operation(op);
+		    trx.add_type_operation('limit_order_create', op);
 		} else {
-		    var op = [1, {
+		    var op = {
 			fee: {
 			    amount: fee * 10 ** cer[0].precision + 1,
 			    asset_id: sellBtsId
@@ -621,9 +622,9 @@ try {
 			},
 			expiration: '2099-09-18T23:00:00',
 			fill_or_kill: true
-		    }];
+		    };
 
-		    var op1 = [1, {
+		    var op1 = {
 			fee: {
 			    amount: fees[0].parameters.current_fees.parameters[1][1].fee,
 			    asset_id: '1.3.0'
@@ -639,16 +640,16 @@ try {
 			},
 			expiration: '2099-09-18T23:00:00',
 			fill_or_kill: true
-		    }];
+		    };
 
 		    console.log(op);
 		    console.log(op1);
 
-		    trx.add_operation(op);
-		    trx.add_operation(op1);
+		    trx.add_type_operation('limit_order_create', op);
+		    trx.add_type_operation('limit_order_create', op1);
 		}
 
-		trx.add_signer(key.privKey, key.pubKey);
+		trx.add_signer(key);
 
 		return trx;
 } catch(e) {console.log(e);}
@@ -662,6 +663,8 @@ try {
 
 	    $('#modalExchangeCoins [data-password-error]').removeClass('active');
 	    $('#modalExchangeCoins [data-password-input]').val('');
+
+	    $('#modalExchangeCoins [data-user]').text(settings.user.name);
 
 	    var prepareTransaction = this.prepareTransaction;
 
@@ -685,7 +688,7 @@ try {
 		try {
 		    $('#modalExchangeCoins .preloader').addClass('active');
 
-		    var trx = await prepareTransaction(key);
+		    var trx = await prepareTransaction(new TransactionBuilder(), key.privKey);
 		    console.log(trx);
 
 		    var r = await trx.broadcast();
@@ -699,6 +702,61 @@ try {
 	    
 		    await app.modalHandler({modalName: 'modalCoin'}, arg.assetId);
 	    
+		    app.setHandlers();
+
+		    await app.changeView('multi-view-modal-show', {
+			modalName: 'modalExchangeCoins',
+			viewName: 'success'
+		    });
+		
+		    return false;
+		} catch (e) {
+		    console.log(e);
+
+		    await app.changeView('multi-view-modal-show', {
+			modalName: 'modalExchangeCoins',
+			viewName: 'fail'
+		    });
+		
+		    return false;
+		}
+	    });
+	},
+
+	beet: async function(arg) {
+	    var prepareTransaction = this.prepareTransaction;
+
+	    $('#modalExchangeCoins [data-beet-send-button]').unbind('click.wex').bind('click.wex', async function() {
+
+		try {
+		    if (!beetApp) {
+			beetApp = await beet.get('Walle7', 'BTS');
+			TransactionBuilder = beetApp.BTS.inject(TransactionBuilder);
+		    }
+
+		    var trx = await prepareTransaction(new TransactionBuilder(), 'inject_wif');
+		    console.log(trx);
+
+		} catch (e) {
+		    console.log(e);
+		    return false;
+		}
+
+		try {
+		    $('#modalExchangeCoins .preloader').addClass('active');
+
+		    //await app.wait(3000);
+		    var r = await trx.broadcast();
+		    console.log(r);
+
+		    await app.updateBalances();
+		    app.renderBalances();
+
+		    await app.updateHistory();
+		    app.renderHistory();
+
+		    await app.modalHandler({modalName: 'modalCoin'}, arg.assetId);
+
 		    app.setHandlers();
 
 		    await app.changeView('multi-view-modal-show', {

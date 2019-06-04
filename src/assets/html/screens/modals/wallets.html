@@ -1,0 +1,50 @@
+  <div id="modalWallets" class="screenModalFull z-70">
+    <div class="header modalHeader">
+      <a class="ic-title-close" data-modal-hide="modalWallets"></a>
+      <h2 class="lh-56">Wallets</h2>
+    </div>
+    <div class="content modalContentHeader">
+      <div class="row up-14">
+        <input type="text" id="coin-search" spellcheck="false" class="input row-wide absolute-input-right" placeholder="Search" value="" />
+        <a class="areaClear"></a>
+      </div>
+      <div class="content modalContentStickyTop">
+        <div class="row fade-in" style="display:none" id="coin-search-empty">
+          <h3 class="text-red text-center lh-56">Nothing found</h3>
+          <p class="text-grey">Sorry, but we could not find this asset. Perhaps you were mistaken when typing in the search, or we have not yet integrated this coin in the list of wallets.<br /><br />If you want to add an unsupported asset, then <a class="text-bold link" data-modal-show="modalDiscord">Join our Discord</a> chat and our community will tell you how to add a new coin to the list of wallets and help with the implementation.</p>
+        </div>
+        <div id="all-coins-template" style="display:none">
+          <li class="fade-in" data-modal-show="modalCoin">
+            <div class="row">
+              <h3>
+                <i class="hover" data-name>Bitcoin</i>
+              </h3>
+            </div>
+            <div class="row">
+              <h5>
+                <i data-amount>0.0004322</i> 
+                <i class="text-grey" data-symbol>BTC</i>
+              </h5>
+              <h5 class="absolute-top-right">
+                <i class="text-grey" data-usd-amount>242</i> 
+                <i class="text-grey">USD</i>
+              </h5>
+            </div>
+          </li>
+        </div>
+        <div class="row">
+          <ul class="items items-1 ic-24b ic-arrow-right-a" id="all-coins-list">
+          </ul>
+        </div>
+        <div class="row" id="coin-search-unsupported">
+          <div class="row title">
+            <h2>Unsupported</h2>
+            <a class="absolute-bottom-h2 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+          </div>
+          <div class="row up-11">
+            <p class="text-grey">We support a huge number of currencies, but there are some that are not yet implemented. To view all the assets you have, please use <a class="text-bold link" href="https://wallet.bitshares.org/" target="_blank">Bitshares Platform</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

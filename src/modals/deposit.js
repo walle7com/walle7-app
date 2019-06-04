@@ -1,5 +1,6 @@
 var numbers = require('../utils/numbers');
 var settings = require('../utils/settings');
+var bitshares = require('../utils/bitshares');
 var app = require('../app');
 
 var kjua = require('kjua');
@@ -173,7 +174,8 @@ module.exports = {
 		.removeClass()
 		.addClass('c-' + arg.assetId);
 
-	    if (arg.assetId == 9) {
+	    // BTS assets
+	    if (asset.wallets[1]) {
 		$('#modalDepositCoins [data-address-input]').val(settings.user.name);
 		$('#modalDepositCoins [data-deposit-input-memo]').hide();
 		$('#modalDepositCoins [data-explorer-link]').attr('href',
@@ -190,10 +192,52 @@ module.exports = {
 		    fill: '#000',
 		    background: '#fff'
 		});
-	
+
 		$('#modalDepositCoins [data-address-qr]').attr('src', el.src);
 
 		return true;
+	    }
+
+
+	    var allCoins = await $.ajax({
+		url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].COINS_LIST,
+		contentType: 'application/json',
+		dataType: 'json'
+	    });
+
+	    var tradingPairs = await $.ajax({
+		url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].TRADING_PAIRS,
+		contentType: 'application/json',
+		dataType: 'json'
+	    });
+
+	    var backedCoins = bitshares.getBackedCoins({
+		allCoins: allCoins,
+		tradingPairs: tradingPairs,
+		backer: app.gws[arg.walletId].ID
+	    });
+
+	    var backingAsset = null;
+	    for (var item of backedCoins) {
+		var backingCoin = item.backingCoinType || item.backingCoin;
+
+		if (backingCoin.toUpperCase().indexOf('EOS.') !== -1) {
+                    backingCoin = backingCoin.split('.')[1];
+                }
+
+		if (backingCoin.toLowerCase() == asset.wallets[arg.walletId].btsSymbol.split('.')[1].toLowerCase()) {
+		    backingAsset = item;
+		    break;
+		}
+	    }
+
+	    var minDeposit = 0;
+	    if (!!backingAsset) {
+		if (!!backingAsset.minAmount && !!backingAsset.precision) {
+		    minDeposit = backingAsset.minAmount / 10 ** backingAsset.precision;
+		} else if (!!backingAsset.gateFee) {
+		    minDeposit = backingAsset.gateFee * 2;
+		}
 	    }
 
 	    var trade = await $.ajax({
@@ -215,70 +259,6 @@ module.exports = {
 	    $('#modalDepositCoins [data-memo-input]').val(trade.inputMemo);
 	    $('#modalDepositCoins [data-explorer-link]').attr('href',
 		settings.assets[arg.assetId].info.explorer[0]);
-
-	    var r = await $.ajax({
-		url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].COINS_LIST,
-		contentType: 'application/json',
-		dataType: 'json'
-	    });
-	    //console.log(r);
-
-	    var coins_by_type = {};
-	    if (arg.walletId == 3) {
-		for (var coin of r) {
-		    coins_by_type[coin.backingCoinType] = coin;
-		}
-	    }
-	
-	    for (var coin of r) {
-		coins_by_type[coin.coinType] = coin;
-	    }
-	    console.log(coins_by_type);
-	
-	    var backedCoins = [];
-	    for (var inputCoin of r) {
-		var outputCoin = coins_by_type[inputCoin.backingCoinType];
-	    
-		if (/*!inputCoin.walletSymbol.startsWith(backer + ".") ||*/
-		    !inputCoin.backingCoinType ||
-	    	    !outputCoin) {
-	    	    continue;
-		}
-	    
-		backedCoins.push({
-            	    name: outputCoin.name,
-            	    gateFee: outputCoin.gateFee || outputCoin.transactionFee,
-            	    backingCoinType: arg.walletId == 3
-                	? inputCoin.backingCoinType.toUpperCase()
-                	: outputCoin.walletSymbol,
-            	    minAmount: outputCoin.minAmount || 0,
-            	    maxAmount: outputCoin.maxAmount || 999999999,
-            	    symbol: inputCoin.walletSymbol,
-            	    //precision: outputCoin.precision,
-            	    supportsMemos: outputCoin.supportsOutputMemos/*,
-            	    depositAllowed: isDepositAllowed,
-            	    withdrawalAllowed: isWithdrawalAllowed*/
-        	});
-	    }
-	    console.log(backedCoins);
-
-	    var coin = null;
-	    for (var item of backedCoins) {//console.log(item.backingCoinType + ' '+trade.outputCoinType);
-		if (item.symbol.toLowerCase() == trade.outputCoinType) {
-		    coin = item;
-		    break;
-		}
-	    }
-	    console.log(coin);
-
-    	    var minDeposit = 0;
-    	    if (!!coin) {
-    		if (!!coin.minAmount && !!coin.precision) {
-    		    minDeposit = coin.minAmount / 10 ** coin.precision;
-    		} else if (!!coin.gateFee) {
-    		    minDeposit = coin.gateFee * 2;
-    		}
-    	    }
 
     	    $('#modalDepositCoins [data-min-amount]').text(minDeposit);
     	    $('#modalDepositCoins [data-min-usd-amount]').text(

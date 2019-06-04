@@ -1,0 +1,90 @@
+        <div data-view="exchange">
+          <div data-view-title style="display:none">
+            <h2 class="lh-56">Sell <i data-sell-symbol>BTC</i> <i class="text-grey">⇄</i> Get <i data-buy-symbol>ETH</i> </h2>
+          </div>
+          <div class="row">
+            <div class="row title">
+              <h3>Quantity to sell <i data-sell-symbol>BTC</i></h3>
+              <a class="absolute-bottom-h2 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+            </div>
+            <div class="row up-13">
+              <div class="row">
+                <input type="text" spellcheck="false" class="absolute-input-right input row-wide" placeholder="0.0" value="" data-sell-amount-input />
+                <div class="absolute-input-right">
+                  <h5 class="input-h5 text-grey">
+                    <i data-usd-sell-amount>0.00</i>
+                    <i>USD</i>
+                  </h5>
+                </div>
+              </div>
+              <div class="row up-4">
+                <h5>
+                  <i class="text-grey">Min.</i> 
+                  <i class="text-underline" data-min-amount>0.0006</i> 
+                  <i class="text-grey" data-sell-symbol>BTC</i>
+                </h5>
+                <h5 class="absolute-top-right">
+                  <i class="text-grey">Max.</i> 
+                  <i class="text-underline" data-max-amount>0.059</i> 
+                  <i class="text-grey" data-sell-symbol>BTC</i>
+                </h5>
+              </div>
+            </div>
+            <div class="row title up-4">
+              <h3>Average you get <i data-buy-symbol>ETH</i></h3>
+              <a class="absolute-bottom-h2 ic-24ar ic-info" data-modal-show="modalHelp"></a>
+            </div>
+            <div class="row up-13">
+              <div class="row">
+                <input type="text" spellcheck="false" class="absolute-input-right input row-wide" placeholder="0.0" value="" data-buy-amount-input />
+                <div class="absolute-input-right">
+                  <h5 class="input-h5 text-grey">
+                    <i data-usd-buy-amount>0.00</i>
+                    <i>USD</i>
+                  </h5>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <ul class="items items-1 ic-24b ic-arrow-right-a">
+                <li class="c-1" data-sell-coin-button data-multi-view-modal-show="modalExchangeCoins" data-view-show2="main">
+                  <div class="row">
+                    <h3>
+                      <i>From </i><i data-sell-name>Bitcoin</i>
+                    </h3>
+                  </div>
+                  <div class="row">
+                    <h5>
+                      <i data-sell-wallet-balance>0.38631</i> 
+                      <i class="text-grey" data-sell-symbol>BTC</i>
+                    </h5>
+                    <h5 class="absolute-top-right">
+                      <i class="text-grey" data-sell-wallet-name>Openledger</i>
+                    </h5>
+                  </div>
+                </li>
+                <li class="c-2" data-buy-coin-button data-multi-view-modal-show="modalExchangeCoins" data-view-show2="selectBuyCoin">
+                  <div class="row">
+                    <h3>
+                      <i>To </i><i data-buy-name>Ethereum</i>
+                    </h3>
+                  </div>
+                  <div class="row">
+                    <h5>
+                      <i data-buy-wallet-balance>631.3332</i> 
+                      <i class="text-grey" data-buy-symbol>ETH</i>
+                    </h5>
+                    <h5 class="absolute-top-right">
+                      <i class="text-grey" data-buy-wallet-name>Openledger</i>
+                    </h5>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="row">
+              <a class="button-deep row-wide" data-multi-view-modal-show="modalExchangeCoins" data-view-show2="confirm" data-modal-arg>
+                <h3>Fix the Price</h3>
+              </a>
+            </div>
+          </div>
+        </div>

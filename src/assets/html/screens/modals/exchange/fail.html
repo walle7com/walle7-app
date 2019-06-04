@@ -1,0 +1,28 @@
+        <div data-view="fail">
+          <div data-view-title style="display:none">
+            <h2 class="lh-56">Failed</h2>
+          </div>
+          <div class="modal-state">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" class="svg-media">
+              <circle class="path circle" fill="none" stroke="#000000" stroke-width="5" stroke-miterlimit="10" cx="64" cy="64" r="60"></circle>
+              <line class="path line" fill="none" stroke="#C83030" stroke-width="6" stroke-linecap="round" stroke-miterlimit="10" x1="40" y1="40" x2="88" y2="88"></line>
+              <line class="path line" fill="none" stroke="#C83030" stroke-width="6" stroke-linecap="round" stroke-miterlimit="10" x1="88" y1="40" x2="40" y2="88"></line>
+            </svg>
+          </div>
+          <div class="row up-1">
+            <h3 class=" text-center">Exchange failed!</h3>
+          </div>
+          <div class="row">
+            <p>Unfortunately, an error occurred and the exchange did not take place. This can happen if you tried to exchange a large amount.</p>
+            <p>Please join our <a class="text-bold link" data-modal-show="modalDiscord">Discord chat</a> and help in the implementation of this functionality.</p>
+            <p>You can return to the previous window and make the exchange with a smaller amount.</p>
+          </div>
+          <div class="row up-3">
+            <a class="button-deep row-half left" data-back-button data-multi-view-modal-show="modalExchangeCoins" data-view-show2="exchange">
+              <h3>Back</h3>
+            </a>
+            <a class="button row-half right margin0" data-modal-hide="modalExchangeCoins">
+              <h3>Close</h3>
+            </a>
+          </div>
+        </div>

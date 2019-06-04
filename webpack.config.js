@@ -52,7 +52,7 @@ module.exports = {
 	new ExtractTextPlugin('bundle.css'),
 	new HtmlWebpackPlugin({
 	    filename: 'index.html',
-	    template: 'src/assets/html/index.html',
+	    template: '!!ejs-webpack-loader!src/assets/html/index.html',
 	    inject: false
 	}),
 	new CopyPlugin([{

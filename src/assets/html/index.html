@@ -42,13 +42,12 @@
     </div>
   </div>
 
-<%= require('html-loader?attrs=false!./screens/onboarding.html') %>
-<%= require('html-loader?attrs=false!./screens/welcome.html') %>
-<%= require('html-loader?attrs=false!./screens/signup.html') %>
-<%= require('html-loader?attrs=false!./screens/signupVerify.html') %>
-<%= require('html-loader?attrs=false!./screens/login.html') %>
-<%= require('html-loader?attrs=false!./screens/pin.html') %>
-<%= require('html-loader?attrs=false!./screens/app.html') %>
-
+<% include ./screens/onboarding.html %>
+<% include ./screens/welcome.html %>
+<% include ./screens/signup.html %>
+<% include ./screens/signupVerify.html %>
+<% include ./screens/login.html %>
+<% include ./screens/pin.html %>
+<% include ./screens/app.html %>
 </body>
 </html>

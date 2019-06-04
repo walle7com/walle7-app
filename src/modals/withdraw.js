@@ -1,10 +1,14 @@
 var numbers = require('../utils/numbers');
 var settings = require('../utils/settings');
+var bitshares = require('../utils/bitshares');
 var app = require('../app');
 
 var kjua = require('kjua');
 var {Apis} = require('bitsharesjs-ws');
 var {TransactionBuilder, TransactionHelper, Aes} = require('bitsharesjs');
+require('@beetapp/beet-js');
+
+var beetApp;
 
 
 module.exports = {
@@ -207,15 +211,18 @@ try{
 	    });
 
 	    $('#modalWithdrawCoins [data-view="withdraw"] [data-modal-arg]').attr('data-modal-arg', JSON.stringify(arg));
+	    $('#modalWithdrawCoins [data-view="confirm"] [data-modal-arg]').attr('data-modal-arg', JSON.stringify(arg));
 
 	    var fees = await Apis.instance().db_api().exec('get_objects', [['2.0.0']]);
 	    var cer = await Apis.instance().db_api().exec('lookup_asset_symbols', [[btsId]]);
 	    var userAcc = await Apis.instance().db_api().exec('get_full_accounts', [[settings.user.id], true]);
+	    console.log(cer);
 
 	    var fee = cer[0].options.core_exchange_rate.quote.amount /
 		cer[0].options.core_exchange_rate.base.amount;
 
-	    if (arg.assetId == 9) {
+	    // BTS assets
+	    if (asset.wallets[1]) {
 		fee = (fees[0].parameters.current_fees.parameters[0][1].fee) *
 		    fee / 10 ** cer[0].precision;
 		fee = fee.toFixed(cer[0].precision);
@@ -235,85 +242,38 @@ try{
 		    fee / 10 ** cer[0].precision;
 		fee = fee.toFixed(cer[0].precision);
 
-		var trade = await $.ajax({
-		    url: app.gws[arg.walletId].BASE + '/simple-api/initiate-trade',
-		    contentType: 'application/json',
-		    type: 'POST',
-		    data: JSON.stringify({
-			inputCoinType: arg.walletId == '3' ? asset.wallets[arg.walletId].btsSymbol.toLowerCase() : asset.symbol.toLowerCase(),
-	    		outputAddress: settings.user.name,
-			outputCoinType: asset.wallets[arg.walletId].btsSymbol.toLowerCase()
-		    }),
-		    dataType: 'json'
-		});
-
-		var r = await $.ajax({
+		var allCoins = await $.ajax({
 		    url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].COINS_LIST,
 		    contentType: 'application/json',
 		    dataType: 'json'
 		});
-		//console.log(r);
 
-		var coins_by_type = {};
-		if (arg.walletId == 3) {
-		    for (var coin of r) {
-			coins_by_type[coin.backingCoinType] = coin;
-		    }
-		}
-	
-		for (var coin of r) {
-		    coins_by_type[coin.coinType] = coin;
-		}
-		console.log(coins_by_type);
-	
-		var backedCoins = [];
-		for (var inputCoin of r) {
-		    var outputCoin = coins_by_type[inputCoin.backingCoinType];
-	    
-		    if (/*!inputCoin.walletSymbol.startsWith(backer + ".") ||*/
-			!inputCoin.backingCoinType ||
-	    		!outputCoin) {
-	    		continue;
-		    }
+		var tradingPairs = await $.ajax({
+		    url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].TRADING_PAIRS,
+		    contentType: 'application/json',
+		    dataType: 'json'
+		});
 
-		    backedCoins.push({
-            		name: outputCoin.name,
-            		gateFee: outputCoin.gateFee || outputCoin.transactionFee,
-            		backingCoinType: arg.walletId == 3
-                	    ? inputCoin.backingCoinType.toUpperCase()
-                	    : outputCoin.walletSymbol,
-            		minAmount: outputCoin.minAmount || 0,
-            		maxAmount: outputCoin.maxAmount || 999999999,
-            		symbol: inputCoin.walletSymbol,
-            		intermediateAccount: arg.walletId == '3' ? 'cryptobridge' : outputCoin.intermediateAccount,
-            		//precision: outputCoin.precision,
-            		supportsMemos: outputCoin.supportsOutputMemos/*,
-            		depositAllowed: isDepositAllowed,
-            		withdrawalAllowed: isWithdrawalAllowed*/
-        	    });
-		}
-		console.log(backedCoins);
+		var backedCoins = bitshares.getBackedCoins({
+		    allCoins: allCoins,
+		    tradingPairs: tradingPairs,
+		    backer: app.gws[arg.walletId].ID
+		});
 
-		var coin = null;
-		for (var item of backedCoins) {//console.log(item.backingCoinType + ' '+trade.outputCoinType);
-		    if ( item.symbol.toLowerCase() == trade.outputCoinType) {
-			coin = item;
+
+		var backingAsset = null;
+		for (var item of backedCoins) {
+		    var backingCoin = item.backingCoinType || item.backingCoin;
+
+		    if (backingCoin.toLowerCase() == asset.wallets[arg.walletId].btsSymbol.split('.')[1].toLowerCase()) {
+			backingAsset = item;
 			break;
 		    }
 		}
-		console.log(coin);
-
-    		/*var minDeposit = 0;
-    		if (!!coin) {
-    		    if (!!coin.minAmount && !!coin.precision) {
-    			minDeposit = coin.minAmount / 10 ** coin.precision;
-    		    } else if (!!coin.gateFee) {
-    			minDeposit = coin.gateFee * 2;
-    		    }
-    		}*/
+		console.log(backingAsset);
 
 
-		var serviceFee = numbers.floatify(parseFloat(coin.gateFee) + parseFloat(fee), 5);
+		var serviceFee = numbers.floatify(parseFloat(backingAsset.gateFee) + parseFloat(fee), 5);
 		data['min-amount'] = serviceFee;
 
 		if (settings.balances[arg.assetId] && settings.balances[arg.assetId].wallets[btsId]) {
@@ -340,14 +300,15 @@ try{
 	    }
 }catch(e){console.log(e);}
 	    
-	    this.prepareTransaction = async (activeKey, memoKey) => {
+	    this.prepareTransaction = async (trx, key) => {
 try{
-		if (arg.assetId == 9) {
+		// BTS assets
+		if (asset.wallets[1]) {
 		    var dexAcc = await Apis.instance().db_api().exec('get_full_accounts', [[$('#modalWithdrawCoins [data-address-input]').val()], true]);
 
-		    var op = [0, {
+		    var op = {
 			fee: {
-			    amount: fee * 10 ** cer[0].precision,
+			    amount: parseInt(fee * 10 ** cer[0].precision, 10),
 			    asset_id: btsId
 			},
 			from: userAcc[0][1].account.id,
@@ -356,49 +317,49 @@ try{
 			    amount: (parseFloat($('#modalWithdrawCoins [data-amount-input]').val()) * 10 ** asset.wallets[arg.walletId].btsPrecision).toFixed(),
 			    asset_id: btsId
 			}
-		    }];
+		    };
 		} else {
-		    var dexAcc = await Apis.instance().db_api().exec('get_full_accounts', [[coin.intermediateAccount], true]);
+		    var dexAcc = await Apis.instance().db_api().exec('get_full_accounts', [[backingAsset.intermediateAccount], true]);
 
-		    console.log('gate fee: ' + coin.gateFee);
+		    console.log('gate fee: ' + backingAsset.gateFee);
 
-		    var op = [0, {
+		    var op = {
 			fee: {
-			    amount: fee * 10 ** cer[0].precision,
+			    amount: parseInt(fee * 10 ** cer[0].precision, 10),
 			    asset_id: btsId
 			},
 			from: userAcc[0][1].account.id,
 			to: dexAcc[0][1].account.id,
 			amount: {
-			    amount: ((parseFloat($('#modalWithdrawCoins [data-amount-input]').val()) + parseFloat(coin.gateFee)) * 10 ** asset.wallets[arg.walletId].btsPrecision).toFixed(),
+			    amount: ((parseFloat($('#modalWithdrawCoins [data-amount-input]').val()) + parseFloat(backingAsset.gateFee)) * 10 ** asset.wallets[arg.walletId].btsPrecision).toFixed(),
 			    asset_id: btsId
 			},
 			memo: {
 			    from: userAcc[0][1].account.options.memo_key,
 			    to: dexAcc[0][1].account.options.memo_key,
-			    nonce: TransactionHelper.unique_nonce_uint64(),
+			    nonce:  TransactionHelper.unique_nonce_uint64(),
 			    message: (arg.walletId == '3' ? asset.wallets[arg.walletId].btsSymbol.toLowerCase() : asset.symbol.toLowerCase()) +
 				':' + $('#modalWithdrawCoins [data-address-input]').val()
 			}
-		    }];
+		    };
 
-		    console.log(op[1].memo.message);
+		    console.log(op.memo.message);
 
-		    var m = Aes.encrypt_with_checksum(
-        		memoKey.privKey,
-            		op[1].memo.to,
-            		op[1].memo.nonce,
-            		op[1].memo.message
-        	    );
+		    if (typeof key != 'string') {
+			var m = Aes.encrypt_with_checksum(
+        		    key,
+            		    op.memo.to,
+            		    op.memo.nonce,
+            		    op.memo.message
+        		);
 	
-		    op[1].memo.message = m;
-		    console.log(m.toString('hex'));
+			op.memo.message = m;
+			console.log(m.toString('hex'));
+		    }
 		}
-		//console.log(op);
 
-		var trx = new TransactionBuilder();
-		trx.add_operation(op);
-		trx.add_signer(activeKey.privKey, activeKey.pubKey);
+		trx.add_type_operation('transfer', op);
+		trx.add_signer(key);
 
 		return trx;
 }catch(e) {console.log(e);}
@@ -467,6 +428,8 @@ try{
 	    $('#modalWithdrawCoins [data-password-error]').removeClass('active');
 	    $('#modalWithdrawCoins [data-password-input]').val('');
 
+	    $('#modalWithdrawCoins [data-user]').text(settings.user.name);
+
 	    var prepareTransaction = this.prepareTransaction;
 
 	    $('#modalWithdrawCoins [data-withdraw-button]').unbind('click.wdraw').bind('click.wdraw', async function() {
@@ -478,7 +441,7 @@ try{
 		}
 
 		var activeKey = app.generateKeyFromPassword(settings.user.name, 'active', $('#modalWithdrawCoins [data-password-input]').val());
-		var memoKey = app.generateKeyFromPassword(settings.user.name, 'memo', $('#modalWithdrawCoins [data-password-input]').val());
+		//var memoKey = app.generateKeyFromPassword(settings.user.name, 'memo', $('#modalWithdrawCoins [data-password-input]').val());
 
 		if (activeKey.pubKey != r.active.key_auths[0][0]) {
 		    $('#modalWithdrawCoins [data-password-error]').addClass('active');
@@ -490,9 +453,10 @@ try{
 		try {
 		    $('#modalWithdrawCoins .preloader').addClass('active');
 
-		    var trx = await prepareTransaction(activeKey, memoKey);
+		    var trx = await prepareTransaction(new TransactionBuilder(), activeKey.privKey);
 		    console.log(trx);
 
+		    //await app.wait(3000);
 		    var r = await trx.broadcast();
 		    console.log(r);
 
@@ -523,5 +487,59 @@ try{
 		    return false;
 		}
 	    });
+	},
+
+	beet: async function(arg) {
+	    var prepareTransaction = this.prepareTransaction;
+
+		$('#modalWithdrawCoins [data-beet-send-button]').unbind('click.wdraw').bind('click.wdraw', async function() {
+
+		try {
+		    if (!beetApp) {
+			beetApp = await beet.get('Walle7', 'BTS');
+			TransactionBuilder = beetApp.BTS.inject(TransactionBuilder);
+		    }
+
+		    var trx = await prepareTransaction(new TransactionBuilder(), 'inject_wif');
+		    console.log(trx);
+		} catch (e) {
+		    console.log(e);
+		    return false;
+		}
+
+		try {
+		    $('#modalWithdrawCoins .preloader').addClass('active');
+
+		    //await app.wait(3000);
+		    var r = await trx.broadcast();
+		    console.log(r);
+
+		    await app.updateBalances();
+		    app.renderBalances();
+	    
+		    await app.updateHistory();
+		    app.renderHistory();
+	    
+		    await app.modalHandler({modalName: 'modalCoin'}, arg.assetId);
+	    
+		    app.setHandlers();
+
+		    await app.changeView('multi-view-modal-show', {
+			modalName: 'modalWithdrawCoins',
+			viewName: 'success'
+		    });
+		
+		    return false;
+		} catch (e) {
+		    console.log(e);
+
+		    await app.changeView('multi-view-modal-show', {
+			modalName: 'modalWithdrawCoins',
+			viewName: 'fail'
+		    });
+		
+		    return false;
+		}
+		});
 	}
 }
