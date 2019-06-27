@@ -99,8 +99,8 @@ h1 .text-regular {
   line-height: 32px;
 }
 h1 .text-huge {
-  font-size: 48px;
-  line-height: 56px;
+  font-size: 44px;
+  line-height: 48px;
 }
 h2.title {
   font-size: 22px;
@@ -286,11 +286,10 @@ h2.title {
 
 .screenFull {
   position: absolute;
-  top: 4px;
+  top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-  min-width: 320px;
   max-width: 980px;
   margin: 0 auto;
   background-color: rgb(255,255,255);
@@ -312,7 +311,7 @@ h2.title {
   top: 16px;
 }
 .ios .screenFull {
-  top: 16px;
+  /*top: 16px;*/
   top: constant(safe-area-inset-top);
   top: env(safe-area-inset-top);
   bottom: constant(safe-area-inset-bottom);

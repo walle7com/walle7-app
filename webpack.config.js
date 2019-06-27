@@ -24,6 +24,7 @@ module.exports = {
 
     mode: 'development',
     devtool: 'inline-source-map',
+    //mode: 'production',
 
     module: {
 	rules: [{

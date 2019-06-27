@@ -157,6 +157,18 @@ module.exports = {
 	    app.setHandlers();
 	},
 
+	maintenance: async function(arg) {
+	    arg = JSON.parse(arg);
+	    
+	    var asset = settings.assets[arg.assetId];	    
+
+	    $('#modalWithdrawCoins [data-asset-symbol]').text(asset.symbol);
+	    $('#modalWithdrawCoins [data-gateway-news]').attr('href', settings.exchanges[arg.walletId].news);
+	    $('#modalWithdrawCoins [data-gateway]').text(settings.exchanges[arg.walletId].name);
+	    $('#modalWithdrawCoins [data-gateway]').attr('href', settings.exchanges[arg.walletId].website);
+	    $('#modalWithdrawCoins [data-gateway-support]').attr('href', settings.exchanges[arg.walletId].support);
+	},
+
 	withdraw: async function(arg) {
 try{
 	    arg = JSON.parse(arg);
@@ -167,7 +179,8 @@ try{
 
 	    var data = {
 		'name': asset.name,
-		'symbol': asset.symbol
+		'symbol': asset.symbol,
+		'fee-symbol': asset.symbol
 	    }
 
 	    $('#modalWithdrawCoins [data-id]')
@@ -227,15 +240,18 @@ try{
 		    fee / 10 ** cer[0].precision;
 		fee = fee.toFixed(cer[0].precision);
 
-		data['min-amount'] = fee;
+		data['min-amount'] = 0.00001;
 
 		if (settings.balances[arg.assetId] && settings.balances[arg.assetId].wallets[btsId]) {
-		    data['max-amount'] = numbers.floatify(settings.balances[arg.assetId].wallets[btsId].amount - fee, 5);
+		    data['max-amount'] = numbers.floatify(settings.balances[arg.assetId].wallets[btsId].amount, 5);
 		} else {
 		    data['max-amount'] = 0;
 		}
-		data['service-fee'] = fee;
-		data['usd-service-fee'] = numbers.floatify(fee * settings.pulse[arg.assetId].pulse.price, 2);
+		
+		data['fee-symbol'] = settings.assets[9].symbol;
+		data['service-fee'] = numbers.floatify(fees[0].parameters.current_fees.parameters[0][1].fee / 10 ** 5, 5);
+		data['usd-service-fee'] = numbers.floatify(data['service-fee'] *
+		    settings.pulse[9].pulse.price, 2);
 	    } else {
 		fee = (fees[0].parameters.current_fees.parameters[0][1].fee +
 		    fees[0].parameters.current_fees.parameters[0][1].price_per_kbyte * 0.2) *
@@ -254,11 +270,20 @@ try{
 		    dataType: 'json'
 		});
 
+		var wallets = await $.ajax({
+		    url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].ACTIVE_WALLETS,
+		    contentType: 'application/json',
+		    dataType: 'json'
+		});
+
 		var backedCoins = bitshares.getBackedCoins({
 		    allCoins: allCoins,
 		    tradingPairs: tradingPairs,
 		    backer: app.gws[arg.walletId].ID
-		});
+		}).filter(a => !!a.walletType);
+        	    backedCoins.forEach(a => {
+            		a.isAvailable = wallets.indexOf(a.walletType) !== -1;
+        	});
 
 
 		var backingAsset = null;
@@ -272,8 +297,26 @@ try{
 		}
 		console.log(backingAsset);
 
+		if (!backingAsset.isAvailable) {
+		    await app.changeView('multi-view-modal-show', {
+			modalName: 'modalWithdrawCoins',
+			viewName: 'maintenance'
+		    }, JSON.stringify(arg));
+		
+		    return false;
+		}
+		
+		var minDeposit = 0;
+		if (!!backingAsset) {
+		    if (!!backingAsset.minAmount && !!backingAsset.precision) {
+			minDeposit = backingAsset.minAmount / 10 ** backingAsset.precision;
+		    } else if (!!backingAsset.gateFee) {
+			minDeposit = parseFloat(backingAsset.gateFee);
+		    }
+		}
 
-		var serviceFee = numbers.floatify(parseFloat(backingAsset.gateFee) + parseFloat(fee), 5);
+
+		var serviceFee = numbers.floatify(minDeposit, 5);
 		data['min-amount'] = serviceFee;
 
 		if (settings.balances[arg.assetId] && settings.balances[arg.assetId].wallets[btsId]) {
@@ -308,8 +351,8 @@ try{
 
 		    var op = {
 			fee: {
-			    amount: parseInt(fee * 10 ** cer[0].precision, 10),
-			    asset_id: btsId
+			    amount: fees[0].parameters.current_fees.parameters[0][1].fee,
+			    asset_id: '1.3.0'
 			},
 			from: userAcc[0][1].account.id,
 			to: dexAcc[0][1].account.id,
@@ -325,8 +368,8 @@ try{
 
 		    var op = {
 			fee: {
-			    amount: parseInt(fee * 10 ** cer[0].precision, 10),
-			    asset_id: btsId
+			    amount: fees[0].parameters.current_fees.parameters[0][1].fee + (fees[0].parameters.current_fees.parameters[0][1].price_per_kbyte * 0.2),
+			    asset_id: '1.3.0'
 			},
 			from: userAcc[0][1].account.id,
 			to: dexAcc[0][1].account.id,
@@ -357,6 +400,7 @@ try{
 			console.log(m.toString('hex'));
 		    }
 		}
+		console.log(op);
 
 		trx.add_type_operation('transfer', op);
 		trx.add_signer(key);

@@ -328,23 +328,11 @@ module.exports = {
 	    }
 
 
-	    $('#modalExchangeCoins [data-sell-coin-button], #modalExchangeCoins [data-sell-id]')
-		.removeClass()
-		.addClass('c-' + arg.sell.assetId)
-		.attr('data-modal-arg', JSON.stringify(arg));
-
-	    $('#modalExchangeCoins [data-buy-coin-button], #modalExchangeCoins [data-buy-id')
-		.removeClass()
-		.addClass('c-' + arg.buy.assetId)
-		.attr('data-modal-arg', JSON.stringify({
-		    sell: arg.sell
-		}));
-
 	    $('#modalExchangeCoins [data-sell-id]')
 		.removeClass()
 		.addClass('c-' + arg.sell.assetId);
 
-	    $('#modalExchangeCoins [data-buy-id')
+	    $('#modalExchangeCoins [data-buy-id]')
 		.removeClass()
 		.addClass('c-' + arg.buy.assetId);
 
@@ -374,24 +362,23 @@ module.exports = {
 	    $('#modalExchangeCoins [data-view="exchange"] [data-modal-arg]').attr('data-modal-arg', JSON.stringify(arg));
 	    $('#modalExchangeCoins [data-view="confirm"] [data-modal-arg]').attr('data-modal-arg', JSON.stringify(arg));
 
-	    var buyAmountInput = $('#modalExchangeCoins [data-buy-amount-input]');
-	    /*buyAmount.unbind('keyup.wex').bind('keyup.wex', function() {
-		$('#modalExchangeCoin [data-usd-buy-amount]').text(
-		    numbers.floatify($(this).val() * settings.pulse[arg.buy.assetId].pulse.price, 2));
-	    });*/
+	    $('#modalExchangeCoins [data-sell-coin-button], #modalExchangeCoins [data-sell-id]')
+		.removeClass()
+		.addClass('c-' + arg.sell.assetId)
+		.attr('data-modal-arg', JSON.stringify(arg));
 
+	    $('#modalExchangeCoins [data-buy-coin-button], #modalExchangeCoins [data-buy-id]')
+		.removeClass()
+		.addClass('c-' + arg.buy.assetId)
+		.attr('data-modal-arg', JSON.stringify({
+		    sell: arg.sell
+		}));
+
+	    var buyAmountInput = $('#modalExchangeCoins [data-buy-amount-input]');
 	    var sellAmountInput = $('#modalExchangeCoins [data-sell-amount-input]');
 
 
-	    var fee = cer[0].options.core_exchange_rate.quote.amount /
-		cer[0].options.core_exchange_rate.base.amount;
-	    fee = (fees[0].parameters.current_fees.parameters[1][1].fee
-	        //+   fees[0].parameters.current_fees.parameters[0][1].price_per_kbyte * 0.2
-	        ) * fee / 10 ** cer[0].precision;
-	    fee = fee.toFixed(cer[0].precision);
-	    console.log('fee: ' + fee);
-
-	    if (data['sell-wallet-balance'] <= fee) {
+	    if (data['sell-wallet-balance'] == 0) {
 		await app.changeView('multi-view-modal-show', {
 		    modalName: 'modalExchangeCoins',
 		    viewName: 'insufficient'
@@ -400,15 +387,51 @@ module.exports = {
 		return false;
 	    }
 
+	    // bts
 	    if (arg.sell.assetId == 9 || arg.buy.assetId == 9) {
-		var ticker = await Apis.instance().db_api().exec('get_limit_orders', [sellBtsId, buyBtsId, 100]);
+		var ticker = await Apis.instance().db_api().exec('get_limit_orders', [buyBtsId, sellBtsId, 100]);
+		console.log(ticker);
+
+		    var i = 0;
+		    var endPos = 0;
+		    while (i < ticker.length) {
+			if (ticker[i].sell_price.base.asset_id == sellBtsId) {
+			    endPos = i-1;
+			    break;
+			}
+			i++;
+		    }
+		    console.log('endPos: ', endPos);
 	    } else {
 		try {
-		    var ticker = await Apis.instance().db_api().exec('get_limit_orders', [sellBtsId, '1.3.0', 100]);
-		    //console.log(ticker);
-		    var ticker2 = await Apis.instance().db_api().exec('get_limit_orders', ['1.3.0', buyBtsId, 100]);
-		    //console.log(ticker2);
+		    var ticker = await Apis.instance().db_api().exec('get_limit_orders', ['1.3.0', sellBtsId, 100]);
+		    console.log(ticker);
+		    var ticker2 = await Apis.instance().db_api().exec('get_limit_orders', [buyBtsId, '1.3.0', 100]);
+		    console.log(ticker2);
 
+		    var i = 0;
+		    var endPos = 0;
+		    while (i < ticker.length) {
+			if (ticker[i].sell_price.base.asset_id == sellBtsId) {
+			    endPos = i-1;
+			    break;
+			}
+			i++;
+		    }
+		    console.log('endPos: ', endPos);
+
+
+		    var i = 0;
+		    var endPos2 = 0;
+		    while (i < ticker2.length) {
+			if (ticker2[i].sell_price.base.asset_id == '1.3.0') {
+			    endPos2 = i-1;
+			    break;
+			}
+			i++;
+		    }
+
+		    console.log('endPos2: ', endPos2);
 		} catch(e) {console.log(e);}
 	    }
 
@@ -427,25 +450,23 @@ module.exports = {
 	    var buyPrice2 = 0;
 
 	    function getAmounts(sell, ticker) {
-		var sellAmount = (parseFloat(sell.amount) * 10 ** sell.asset.precision).toFixed();
+		var sellAmount = Math.trunc(parseFloat(sell.amount) * 10 ** sell.asset.precision);
 		var sum = 0;
 
-		for (var pricePos = 0; pricePos < ticker.length; pricePos++) {
-		    sum += ticker[pricePos].for_sale;
+		for (var pricePos = 0; pricePos <= endPos; pricePos++) {
+		    sum += ticker[pricePos].for_sale / ticker[pricePos].sell_price.base.amount * ticker[pricePos].sell_price.quote.amount;
 
 		    if (sum >= sellAmount) {
 			break;
 		    }
 		}
 
+		pricePos = pricePos > 0 ? (pricePos >= ticker.length ? ticker.length - 1 : pricePos-1) : 0;
+
 		var sellPrice = ticker[pricePos].sell_price.quote.amount / ticker[pricePos].sell_price.base.amount;
 		var buyPrice = ticker[pricePos].sell_price.base.amount / ticker[pricePos].sell_price.quote.amount;
 
-		if (sell.asset.id == 9) {
-		    buyAmount = (sellAmount - 1 - fees[0].parameters.current_fees.parameters[1][1].fee) * sellPrice;
-		} else {
-		    buyAmount = sellAmount * sellPrice - 1 - fees[0].parameters.current_fees.parameters[1][1].fee;
-		}
+		buyAmount = Math.trunc(sellAmount * buyPrice);
 
 		return {
 		    sell: {
@@ -458,6 +479,40 @@ module.exports = {
 		    }
 		}
 	    }
+
+	    sellAmountInput.unbind('input.wex').bind('input.wex', function(e) {
+		var p = sellAsset.wallets[arg.sell.walletId].btsPrecision;
+        	var t = new RegExp("^((\\s*|[1-9][0-9]*\\.?[0-9]{0," +
+            	    p + "})|(0|(0\\.)[0-9]{0," + p + "}))$").test(e.target.value);
+
+		var s = e.target.value.split('.');
+
+		var m = parseFloat($('#modalExchangeCoins [data-max-amount]').text());
+
+		if (!t || parseFloat(e.target.value) > m ||
+		    s.length > 1 && s[1].length > sellAsset.wallets[arg.sell.walletId].btsPrecision) {
+		    sellAmountInput.val(v);
+		}
+	    });
+
+	    var v;
+	    sellAmountInput.unbind('keypress.wex').bind('keypress.wex', function(e) {
+		if (!/^[0-9\.]$/.test(e.key)) {
+		    return false;
+		}
+
+		if (e.key == '.' && e.target.value == '') {
+		    e.target.value = '0';
+		}
+		
+		v = e.target.value;
+		var m = v.match(/\./g);
+		var p = m ? m.length : 0;
+		
+		if (e.key == '.' && p > 1) {
+		    return false;
+		}
+	    });
 
 	    sellAmountInput.unbind('keyup.wex').bind('keyup.wex', function() {
 		if ($(this).val().length) {
@@ -517,27 +572,176 @@ module.exports = {
 		);
 	    });
 
-	    /*buyAmountInput.unbind('keyup.wex').bind('keyup.wex', function() {
-		$('#modalExchangeCoins [data-usd-buy-amount]').text(
-		    numbers.floatify($(this).val() * settings.pulse[arg.buy.assetId].pulse.price, 2)
-		);
+try{
+	    if (arg.sell.assetId == 9 || arg.buy.assetId == 9) {
+		var lRate = ((settings.pulse[arg.sell.assetId].pulse.price / settings.pulse[arg.buy.assetId].pulse.price) * 
+    		    (10 ** buyAsset.wallets[arg.buy.walletId].btsPrecision / 10 ** sellAsset.wallets[arg.sell.walletId].btsPrecision) * 0.9);
 
-		if ($(this).val().length) {
-		    var sellPrice = ticker[0].sell_price.base.amount / ticker[0].sell_price.quote.amount;
-		    var buyPrice = ticker2[0].sell_price.base.amount / ticker2[0].sell_price.quote.amount;
-		    var buyAmount = parseFloat(buyAmountInput.val()) * 10 ** buyAsset.wallets[arg.buy.walletId].btsPrecision * buyPrice;
+		//console.log('lRate: '+ lRate);
 
-		    sellAmountInput.val(
-			numbers.floatify(((buyAmount - 1 - 578) / buyPrice - 1) / 10 ** sellAsset.wallets[arg.buy.walletId].btsPrecision, 6)
-		    );
-		} else {
-		    sellAmountInput.val('');
+    		var maxRate = ((settings.pulse[arg.sell.assetId].pulse.price / settings.pulse[arg.buy.assetId].pulse.price) * 
+    		    (10 ** buyAsset.wallets[arg.buy.walletId].btsPrecision / 10 ** sellAsset.wallets[arg.sell.walletId].btsPrecision) * 0.5);
+
+		//console.log('maxRate: '+ maxRate);
+
+		var lSum = 0;
+		for (var pricePos = 0; pricePos <= endPos; pricePos++) {
+		    var t = ticker[pricePos].sell_price.base.amount / ticker[pricePos].sell_price.quote.amount;
+		    if (t < lRate) {	
+			//console.log('lPos: ',pricePos > 0 ? pricePos - 1 : 0);
+			break;
+		    }
+
+		    lSum += ticker[pricePos].for_sale / ticker[pricePos].sell_price.base.amount * ticker[pricePos].sell_price.quote.amount;
 		}
+		//console.log('lSum: ' + lSum);
+
+		var mSum = 0;
+		for (var pricePos = 0; pricePos <= endPos; pricePos++) {
+		    var t = ticker[pricePos].sell_price.base.amount / ticker[pricePos].sell_price.quote.amount;
+		    if (t < maxRate) {	
+			//console.log('maxPos: ',pricePos > 0 ? pricePos - 1 : 0);
+			break;
+		    }
+
+		    mSum += ticker[pricePos].for_sale / ticker[pricePos].sell_price.base.amount * ticker[pricePos].sell_price.quote.amount;
+		}
+		//console.log('mSum: ' + mSum);
+
+		//console.log('maxPos: ',pricePos-1);
+
+		var liquidAmount = numbers.toFixedTrunc(lSum / 10 ** sellAsset.wallets[arg.sell.walletId].btsPrecision, 2);
+		var maxAmount = numbers.toFixedTrunc(mSum / 10 ** sellAsset.wallets[arg.sell.walletId].btsPrecision, 2);
+	    } else {
+		var lRate = ((settings.pulse[arg.sell.assetId].pulse.price / settings.pulse[9].pulse.price) * 
+    		    (10 ** 5 / 10 ** sellAsset.wallets[arg.sell.walletId].btsPrecision) * 0.9);
+
+		//console.log('lRate: '+ lRate);
+
+		var lRate2 = ((settings.pulse[9].pulse.price / settings.pulse[arg.buy.assetId].pulse.price) * 
+    		    (10 ** buyAsset.wallets[arg.buy.walletId].btsPrecision / 10 ** 5) * 0.9);
+
+		//console.log('lRate2: '+ lRate2);
+
+		var maxRate = ((settings.pulse[arg.sell.assetId].pulse.price / settings.pulse[9].pulse.price) * 
+		    (10 ** 5 / 10 ** sellAsset.wallets[arg.sell.walletId].btsPrecision) * 0.5);
+
+		//console.log('maxRate: '+ maxRate);
+
+		var maxRate2 = ((settings.pulse[9].pulse.price / settings.pulse[arg.buy.assetId].pulse.price) * 
+    		    (10 ** buyAsset.wallets[arg.buy.walletId].btsPrecision / 10 ** 5) * 0.5);
+
+		//console.log('maxRate2: '+ maxRate2);
+
+		var lSum1 = 0;
+		var lPos = 0;
+		for (var pricePos = 0; pricePos <= endPos; pricePos++) {
+		    var t = ticker[pricePos].sell_price.base.amount / ticker[pricePos].sell_price.quote.amount;
+		    if (t < lRate) {	
+			//console.log('lPos: ',pricePos > 0 ? pricePos - 1 : 0);
+			lPos = pricePos > 0 ? pricePos - 1 : 0;
+			break;
+		    }
+
+		    lSum1 += ticker[pricePos].for_sale / ticker[pricePos].sell_price.base.amount * ticker[pricePos].sell_price.quote.amount;
+		}
+		//console.log('lSum1: ' + lSum1);
+
+		var lSum2 = 0;
+		var lPos2 = 0;
+		for (var pricePos = 0; pricePos <= endPos2; pricePos++) {
+		    var t = ticker2[pricePos].sell_price.base.amount / ticker2[pricePos].sell_price.quote.amount;
+		    if (t < lRate2) {	
+			//console.log('lPos2: ',pricePos > 0 ? pricePos - 1 : 0);
+			lPos2 = pricePos > 0 ? pricePos - 1 : 0;
+			break;
+		    }
+
+		    lSum2 += ticker2[pricePos].for_sale / ticker2[pricePos].sell_price.base.amount * ticker2[pricePos].sell_price.quote.amount;
+		}
+		//console.log('lSum2: ' + lSum2);
+
+
+		var mSum1 = 0;
+		var mPos = 0;
+		for (var pricePos = 0; pricePos <= endPos; pricePos++) {
+		    var t = ticker[pricePos].sell_price.base.amount / ticker[pricePos].sell_price.quote.amount;
+		    if (t < maxRate) {	
+			mPos = pricePos > 0 ? pricePos + 1 == ticker.length ? pricePos : pricePos + 1 : 0;
+			break;
+		    }
+
+		    mSum1 += ticker[pricePos].for_sale / ticker[pricePos].sell_price.base.amount * ticker[pricePos].sell_price.quote.amount;
+		}
+		//console.log('mSum1: ' + mSum1);
+		var pricePosMSum1 = pricePos - 1;
+		//console.log('pricePosMSum1: ' + pricePosMSum1);
+
+		//console.log('maxPos: ',pricePos - 1);
+
+		var mSum2 = 0;
+		var mPos2 = 0;
+		for (var pricePos = 0; pricePos <= endPos2; pricePos++) {
+		    var t = ticker2[pricePos].sell_price.base.amount / ticker2[pricePos].sell_price.quote.amount;
+		    if (t < maxRate2) {	
+			mPos2 = pricePos > 0 ? pricePos + 1 == ticker.length ? pricePos : pricePos + 1 : 0;
+			break;
+		    }
+
+		    mSum2 += ticker2[pricePos].for_sale / ticker2[pricePos].sell_price.base.amount * ticker2[pricePos].sell_price.quote.amount;
+		}
+		//console.log('mSum2: ' + mSum2);
+
+		//console.log('maxPos2: ',pricePos - 1);
+
+		var lSum = lSum2 / (ticker[lPos].sell_price.base.amount / ticker[lPos].sell_price.quote.amount)
+		var liquidAmount = numbers.toFixedTrunc((lSum > lSum1 ? lSum1 : lSum) / 10 ** sellAsset.wallets[arg.sell.walletId].btsPrecision, 2);
+
+		var mSum = mSum2 / (ticker[mPos].sell_price.base.amount / ticker[mPos].sell_price.quote.amount)
+		var maxAmount = numbers.toFixedTrunc((mSum > mSum1 ? mSum1 : mSum) / 10 ** sellAsset.wallets[arg.sell.walletId].btsPrecision, 2);
+	    }
+}catch(e){console.log(e)}
+
 	    
-		$('#modalExchangeCoins [data-usd-sell-amount]').text(
-		    numbers.floatify(sellAmountInput.val() * settings.pulse[arg.sell.assetId].pulse.price, 2)
-		);
-	    });*/
+	    $('#modalExchangeCoins [data-min-amount]').text(
+		numbers.floatify(0.01 / settings.pulse[arg.sell.assetId].pulse.price, sellAsset.wallets[arg.sell.walletId].btsPrecision)
+	    );
+
+	    $('#modalExchangeCoins [data-liquid-amount]').text(
+		liquidAmount
+	    );
+
+	    $('#modalExchangeCoins [data-max-amount]').text(
+		maxAmount
+	    );
+
+	    $('#modalExchangeCoins [data-liquidity-box]').removeClass('active');
+	    $('#modalExchangeCoins [data-liquidity-warn]').removeClass('active');
+	    $('#modalExchangeCoins [data-max-box]').removeClass('active');
+
+	    if (liquidAmount > 0) {
+		if (data['sell-wallet-balance'] <= liquidAmount) {
+		    $('#modalExchangeCoins [data-max-box]').addClass('active');
+		    $('#modalExchangeCoins [data-max-amount]').text(data['sell-wallet-balance']);
+		} else if (data['sell-wallet-balance'] > liquidAmount && data['sell-wallet-balance'] < maxAmount) {
+		    $('#modalExchangeCoins [data-liquidity-box]').addClass('active');
+		    $('#modalExchangeCoins [data-max-amount]').text(data['sell-wallet-balance']);
+		} else {
+		    $('#modalExchangeCoins [data-liquidity-box]').addClass('active');
+		}
+	    } else {
+		$('#modalExchangeCoins [data-liquidity-warn]').addClass('active');
+		$('#modalExchangeCoins [data-max-amount]').text(data['sell-wallet-balance']);
+	    }
+
+	    if (maxAmount == 0) {
+		await app.changeView('multi-view-modal-show', {
+		    modalName: 'modalExchangeCoins',
+		    viewName: 'illiquid'
+		}, JSON.stringify(arg));
+		
+		return false;
+	    }
 
 	    sellAmountInput.val('');
 	    sellAmountInput.trigger('keyup');
@@ -553,6 +757,14 @@ module.exports = {
 		sellAmountInput.trigger('keyup');
 	    });
 
+	    $('#modalExchangeCoins [data-view="exchange"] [data-liquid-amount]').unbind('click.wex').bind('click.wex', function() {
+		sellAmountInput.val(
+		    $('#modalExchangeCoins [data-view="exchange"] [data-liquid-amount]').text()
+		);
+		
+		sellAmountInput.trigger('keyup');
+	    });
+
 	    $('#modalExchangeCoins [data-view="exchange"] [data-max-amount]').unbind('click.wex').bind('click.wex', function() {
 		sellAmountInput.val(
 		    $('#modalExchangeCoins [data-view="exchange"] [data-max-amount]').text()
@@ -563,28 +775,7 @@ module.exports = {
 
 	    this.prepareTransaction = async (trx, key) => {
 try {
-		if (arg.buy.assetId == 9) {
-		    var op = {
-			fee: {
-			    amount: fee * 10 ** cer[0].precision + 1,
-			    asset_id: sellBtsId
-			},
-			seller: userAcc[0][1].account.id,
-			amount_to_sell: {
-			    amount: sellAmount,
-			    asset_id: sellBtsId
-			},
-			min_to_receive: {
-			    amount: (buyAmount * buyPrice).toFixed() - 1,
-			    asset_id: '1.3.0'
-			},
-			expiration: '2099-09-18T23:00:00',
-			fill_or_kill: true
-		    };
-
-		    console.log(op);
-		    trx.add_type_operation('limit_order_create', op);
-		} else if (arg.sell.assetId == 9) {
+		if (arg.buy.assetId == 9 || arg.sell.assetId == 9) {
 		    var op = {
 			fee: {
 			    amount: fees[0].parameters.current_fees.parameters[1][1].fee,
@@ -593,23 +784,23 @@ try {
 			seller: userAcc[0][1].account.id,
 			amount_to_sell: {
 			    amount: sellAmount,
-			    asset_id: '1.3.0'
+			    asset_id: sellBtsId
 			},
 			min_to_receive: {
-			    amount: (buyAmount * sellPrice).toFixed() - 1,
+			    amount: buyAmount - 1,
 			    asset_id: buyBtsId
 			},
 			expiration: '2099-09-18T23:00:00',
 			fill_or_kill: true
 		    };
-		    
+
 		    console.log(op);
 		    trx.add_type_operation('limit_order_create', op);
 		} else {
 		    var op = {
 			fee: {
-			    amount: fee * 10 ** cer[0].precision + 1,
-			    asset_id: sellBtsId
+			    amount: fees[0].parameters.current_fees.parameters[1][1].fee,
+			    asset_id: '1.3.0'
 			},
 			seller: userAcc[0][1].account.id,
 			amount_to_sell: {
@@ -617,7 +808,7 @@ try {
 			    asset_id: sellBtsId
 			},
 			min_to_receive: {
-			    amount: (buyAmount * buyPrice).toFixed() - 1,
+			    amount: sellAmount2 - 1,
 			    asset_id: '1.3.0'
 			},
 			expiration: '2099-09-18T23:00:00',
@@ -635,7 +826,7 @@ try {
 			    asset_id: '1.3.0'
 			},
 			min_to_receive: {
-			    amount: (buyAmount2 * sellPrice2).toFixed() - 1,
+			    amount: buyAmount2 - 1,
 			    asset_id: buyBtsId
 			},
 			expiration: '2099-09-18T23:00:00',

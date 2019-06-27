@@ -132,11 +132,23 @@ module.exports = {
 
 	    app.setHandlers();
 	},
-	
+
+	maintenance: async function(arg) {
+	    arg = JSON.parse(arg);
+	    
+	    var asset = settings.assets[arg.assetId];	    
+
+	    $('#modalDepositCoins [data-asset-symbol]').text(asset.symbol);
+	    $('#modalDepositCoins [data-gateway-news]').attr('href', settings.exchanges[arg.walletId].news);
+	    $('#modalDepositCoins [data-gateway]').text(settings.exchanges[arg.walletId].name);
+	    $('#modalDepositCoins [data-gateway]').attr('href', settings.exchanges[arg.walletId].website);
+	    $('#modalDepositCoins [data-gateway-support]').attr('href', settings.exchanges[arg.walletId].support);
+	},
+
 	deposit: async function(arg) {
 	    console.log('deposit');
 	    console.log(arg);
-
+try {
 	    arg = JSON.parse(arg);
 
 	    $('#modalDepositCoins [data-address-copy-button]')
@@ -211,11 +223,20 @@ module.exports = {
 		dataType: 'json'
 	    });
 
+	    var wallets = await $.ajax({
+		url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].ACTIVE_WALLETS,
+		contentType: 'application/json',
+		dataType: 'json'
+	    });
+
 	    var backedCoins = bitshares.getBackedCoins({
 		allCoins: allCoins,
 		tradingPairs: tradingPairs,
 		backer: app.gws[arg.walletId].ID
-	    });
+	    }).filter(a => !!a.walletType);
+        	backedCoins.forEach(a => {
+            	    a.isAvailable = wallets.indexOf(a.walletType) !== -1;
+            });
 
 	    var backingAsset = null;
 	    for (var item of backedCoins) {
@@ -229,6 +250,16 @@ module.exports = {
 		    backingAsset = item;
 		    break;
 		}
+	    }
+	    console.log(backingAsset);
+
+	    if (!backingAsset.isAvailable) {
+		await app.changeView('multi-view-modal-show', {
+		    modalName: 'modalDepositCoins',
+		    viewName: 'maintenance'
+		}, JSON.stringify(arg));
+		
+		return false;
 	    }
 
 	    var minDeposit = 0;
@@ -288,5 +319,7 @@ module.exports = {
 	    } else {
 		$('#modalDepositCoins [data-deposit-input-memo]').hide();
 	    }
+} catch(e){console.log(e);}
 	}
+
 }

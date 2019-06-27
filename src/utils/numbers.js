@@ -2,7 +2,8 @@ module.exports = {
     floatify: floatify,
     shortenNumber: shortenNumber,
     toFixed: toFixed,
-    formatNumber: formatNumber
+    formatNumber: formatNumber,
+    toFixedTrunc: toFixedTrunc
 }
 
 function floatify(number, d){
@@ -21,7 +22,7 @@ function shortenNumber(n) {
     }
 
     var r = toFixed(n).toString().split('.');
-    if (r.length  == 2 && r[1].length > 5) {
+    if (r.length == 2 && r[1].length > 5) {
 	var r2 = r[1].split('');
 	r2.splice(r2.length - 1 - (r2.length - 4), r2.length - 4, '...');
 	return r[0] + '.' + r2.join('');
@@ -46,6 +47,15 @@ function toFixed(x) {
     }
   }
   return x;
+}
+
+function toFixedTrunc(value, n) {
+  const v = value.toString().split('.');
+  if (n <= 0) return v[0];
+  let f = v[1] || '';
+  if (f.length > n) return `${v[0]}.${f.substr(0,n)}`;
+  while (f.length < n) f += '0';
+  return parseFloat(`${v[0]}.${f}`)
 }
 
 function formatNumber(num) {

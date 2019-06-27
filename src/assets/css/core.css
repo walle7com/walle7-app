@@ -85,16 +85,16 @@
 }
 .screenModalDynamic .modalClose {
   display: none;
-  position: absolute;
+  position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: rgba(255,255,255,0.9);
+  background-image: radial-gradient( circle, rgba(136,136,136,0.3), rgba(136,136,136,0.1), rgba(136,136,136,0) );
   cursor: default;
 }
 .screenModalDynamic.active .modalClose {
-  display: block;
+  display: none;
   opacity: 0;
   animation: opacityup 0.3s ease forwards;
 }
@@ -162,12 +162,22 @@
   opacity: 0;
   border-radius: 4px;
   background-color: rgb(255,255,255);
+}
+.contentModalShadow {
   box-shadow: 0px 24px 48px 0px rgba(3,3,3,0.08), 0px 1px 8px 0px rgba(3,3,3,0.08), 0px 6px 16px -1px rgba(3,3,3,0.09);
 }
 .widthMiddle {
   width: 100%;
   max-width: 420px;
   height: 100%;
+}
+@media (min-width: 452px) {
+  .screenModalDynamic.active .modalClose {
+    display: block;
+  }
+  .contentModal {
+    box-shadow: 0px 24px 48px 0px rgba(3,3,3,0.08), 0px 1px 8px 0px rgba(3,3,3,0.08), 0px 6px 16px -1px rgba(3,3,3,0.09);
+  }
 }
 @media (min-height: 544px) and (min-width: 452px) {
   .positionFixCenter {
@@ -382,8 +392,15 @@ h3 .text-regular {
   border-bottom: 1px solid rgb(145,145,145);
   cursor: pointer;
 }
+.text-dashed {
+  border-bottom: 1px solid rgb(145,145,145);
+  cursor: pointer;
+}
 .text-center {
   text-align: center;
+}
+.cursor-default {
+  cursor: default;
 }
 .lh-48 {
   line-height: 48px;
@@ -400,7 +417,7 @@ h3 .text-regular {
   width: 100%;
 }
 .row.up-1 {
-  margin: 8px 0;
+  margin: 4px 0 8px 0;
 }
 .row.up-2 {
   margin: 32px 0 8px 0;
@@ -508,11 +525,21 @@ h3 .text-regular {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 0 16px 16px 16px;
+  padding: 0 1em 1em 1em;
   overflow-y: auto;
   overflow-y: overlay;
   overflow-x: hidden;
   z-index: 10;
+}
+@media (min-width: 321px) and (max-width: 719px) {
+  .header,
+  .header-wide {
+    left: 0.5em;
+    right: 0.5em;
+  }
+  .content {
+    padding: 0 1.5em 1.5em 1.5em;
+  }
 }
 .webkit .content {
   overflow-y: overlay;
@@ -521,13 +548,13 @@ h3 .text-regular {
   float: left;
   position: relative;
   display: block;
-  margin: 4px 0 0 6px;
+  margin: 8px 4px 0 12px;
   border: 0;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   background-size: 32px;
   background-image: url(i/ic_logo.png);
-  background-position: 8px 8px;
+  background-position: 50%;
   background-repeat: no-repeat;
   cursor: default;
 }
@@ -683,7 +710,7 @@ h3 .text-regular {
 }
 .button {
   position: relative;
-  display: block;
+  display: inline-block;
   margin: 8px 0;
   text-align: center;
   padding: 16px;
@@ -1069,7 +1096,10 @@ li.button:last-child {
   margin: 0;
   resize: none;
   outline: none;
-  transition: background 0.4s ease;
+  transition: all 0.4s ease;
+}
+.input:invalid {
+  border: 2px solid rgb(255, 47, 73);
 }
 .hide-password {
   font-family: 'text-security-disc';
@@ -1232,6 +1262,39 @@ div.absolute-input-right .input-h5 {
 .ic-attention:before {
   background-image: url(i/ic_attention.png);
 }
+.ic-beet {
+  display: none;
+}
+.desktop .ic-beet {
+  display: block;
+}
+.ic-beet h5 {
+  display: inline-block;
+  margin-left: 24px;
+  transition: color 0.2s ease;
+}
+.ic-beet h5:before {
+  content: '';
+  position: absolute;
+  margin: -8px 0 0 -32px;
+  width: 32px;
+  height: 32px;
+  background-size: 31px;
+  background-position: 0;
+  background-repeat: no-repeat;
+  background-image: url(i/ic_beet.png);
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+.ic-beet:hover h5 {
+  color: rgb(200,10,140);
+}
+.ic-beet:hover h5:before {
+  opacity: 1;
+}
+
+
+
 
 .footer {
   position: absolute;
@@ -1364,15 +1427,6 @@ div.absolute-input-right .input-h5 {
   right: 0;
   background-color: rgba(255,255,255,0.9);
   z-index: 100;
-}
-.contentModal {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  opacity: 0;
-  border-radius: 4px;
-  background-color: rgb(255,255,255);
-  box-shadow: 0px 0px 8px 0px rgba(3,3,3,0.15), 0px 4px 32px 0px rgba(3,3,3,0.15);
 }
 a.modalLine {
   display: block;
@@ -1877,7 +1931,7 @@ label.error .indicator {
     to   { opacity: 1; }
 }
 .notouch .button:hover {
-  background-color: rgba(229,237,249,0);
+  background-color: rgba(229,237,249,0.4);
   box-shadow: inset 0px 0px 0px 2px rgba(18,83,252,1);
   cursor: pointer;
 }

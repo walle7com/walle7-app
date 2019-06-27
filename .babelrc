@@ -1,0 +1,25 @@
+{
+    "presets": [
+	[
+	    "@babel/preset-env",
+	    {
+		"targets": {
+		    "browsers": [
+			"ios >= 10"
+		    ]
+		},
+		"modules": "commonjs",
+		"useBuiltIns": "usage",
+		"debug": true
+	    }
+	]
+    ],
+    "plugins": [
+	"@babel/transform-async-to-generator",
+	[
+	    "@babel/plugin-transform-block-scoping", {
+		"throwIfClosureRequired": false
+	    }
+	]
+    ]
+}

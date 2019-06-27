@@ -79,6 +79,8 @@ try{
 	    rates[c] = tr.latest;
 	}*/
 
+	$('#screenApp [data-user]').text(settings.user.name);
+
 	await app.updateBalances();
 	app.renderBalances();
 
