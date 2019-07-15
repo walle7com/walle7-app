@@ -41,22 +41,6 @@ module.exports = function() {
 	    var acc = await Apis.instance().db_api().exec('get_account_by_name', [$('#signupName').val()]);
 	    console.log(acc);
 
-	    /*if (activePubkey == acc.active.key_auths[0][0]) {
-		settings.user = {
-		    id: acc.id,
-		    name: acc.name,
-		    password: $('#signupPassword').val()
-		}
-
-		$('#signupName').val('');
-		$('#signupPassword').val('');
-		$('#signupPassword2').val('');
-		$('#signupVerifyName').text('');
-		$('#signupVerifyPassword').text('');
-
-	    	app.changeView('view-show', 'screenPin');
-	    }*/
-
 	    settings.user = {
 		id: acc.id,
 		name: acc.name

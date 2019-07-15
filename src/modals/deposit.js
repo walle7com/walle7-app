@@ -211,32 +211,12 @@ try {
 	    }
 
 
-	    var allCoins = await $.ajax({
-		url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].COINS_LIST,
-		contentType: 'application/json',
-		dataType: 'json'
-	    });
-
-	    var tradingPairs = await $.ajax({
-		url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].TRADING_PAIRS,
-		contentType: 'application/json',
-		dataType: 'json'
-	    });
-
-	    var wallets = await $.ajax({
-		url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].ACTIVE_WALLETS,
-		contentType: 'application/json',
-		dataType: 'json'
-	    });
-
-	    var backedCoins = bitshares.getBackedCoins({
-		allCoins: allCoins,
-		tradingPairs: tradingPairs,
-		backer: app.gws[arg.walletId].ID
-	    }).filter(a => !!a.walletType);
-        	backedCoins.forEach(a => {
-            	    a.isAvailable = wallets.indexOf(a.walletType) !== -1;
-            });
+	    var gw = bitshares.availableGateways[app.gws[arg.walletId].ID];
+	    if (!!gw.isSimple) {
+		var backedCoins = await bitshares.fetchCoinsSimple(app.gws[arg.walletId]);
+	    } else {
+        	var backedCoins = await bitshares.fetchCoins(app.gws[arg.walletId]);
+    	    }
 
 	    var backingAsset = null;
 	    for (var item of backedCoins) {
@@ -271,23 +251,31 @@ try {
 		}
 	    }
 
-	    var trade = await $.ajax({
-		url: app.gws[arg.walletId].BASE + '/simple-api/initiate-trade',
-		contentType: 'application/json',
-		type: 'POST',
-		data: JSON.stringify({
-		    inputCoinType: arg.walletId == '3' ? asset.wallets[arg.walletId].btsSymbol.toLowerCase() : asset.symbol.toLowerCase(),
-	    	    outputAddress: settings.user.name,
-		    outputCoinType: asset.wallets[arg.walletId].btsSymbol.toLowerCase()
-		}),
-		dataType: 'json'
+	    var trade = await bitshares.getDepositAddress({
+		walletType: backingAsset.walletType,
+		inputCoinType: arg.walletId == '3' ? asset.wallets[arg.walletId].btsSymbol.toLowerCase() : asset.symbol.toLowerCase(),
+		outputCoinType: asset.wallets[arg.walletId].btsSymbol.toLowerCase(),
+		outputAddress: settings.user.name,
+		gw: app.gws[arg.walletId]
 	    });
 
 	    console.log(trade);
 
+	    if (!!gw.simpleAssetGateway) {
+		var inputAddress = backingAsset.gatewayWallet;
+		var inputMemo = !gw.fixedMemo
+                        ? settings.user.name
+                        : gw.fixedMemo['prepend'] +
+                          settings.user.name +
+                          gw.fixedMemo['append'];
+	    } else {
+		var inputAddress = trade.inputAddress;
+		var inputMemo = trade.inputMemo;
+	    }
 
-	    $('#modalDepositCoins [data-address-input]').val(trade.inputAddress);
-	    $('#modalDepositCoins [data-memo-input]').val(trade.inputMemo);
+
+	    $('#modalDepositCoins [data-address-input]').val(inputAddress);
+	    $('#modalDepositCoins [data-memo-input]').val(inputMemo);
 	    $('#modalDepositCoins [data-explorer-link]').attr('href',
 		settings.assets[arg.assetId].info.explorer[0]);
 
@@ -297,7 +285,7 @@ try {
     	    );
 
 	    var el = kjua({
-		text: trade.inputAddress,
+		text: inputAddress,
 		size: 210,
 		fill: '#000',
 		background: '#fff'
@@ -305,11 +293,11 @@ try {
 	
 	    $('#modalDepositCoins [data-address-qr]').attr('src', el.src);
 
-	    if (trade.inputMemo) {
+	    if (inputMemo) {
 		$('#modalDepositCoins [data-deposit-input-memo]').show();
 
 		var el = kjua({
-		    text: trade.inputMemo,
+		    text: inputMemo,
 		    size: 210,
 		    fill: '#000',
 		    background: '#fff'

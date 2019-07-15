@@ -1160,6 +1160,59 @@ div.absolute-input-right .input-h5 {
   line-height: 56px;
   padding: 0 2px;
 }
+div.absolute-input-right .areaBadge {
+  position: absolute;
+  right: 0;
+  margin: 8px 0;
+  padding: 8px 16px;
+  text-align: center;
+  border-radius: 6px;
+  background-color: rgba(229,237,249,1);
+  box-shadow: inset 0px 0px 0px 2px rgba(18,83,252,0);
+}
+div.absolute-input-right .areaError {
+  height: 40px;
+  width: 56px;
+  background-image: url(i/ic_warning.png);
+  background-position: 50%;
+  background-size: 24px;
+  background-repeat: no-repeat;
+  -webkit-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+}
+div.absolute-input-right .areaValid {
+  height: 40px;
+  width: 56px;
+  background-image: url(i/ic_content_check.png);
+  background-position: 50%;
+  background-size: 24px;
+  background-repeat: no-repeat;
+  -webkit-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+}
+
+
+div.absolute-badge-right {
+  position: absolute;
+  top: 0;
+  right: 8px;
+}
+input.absolute-badge-right {
+  padding: 10px 14px;
+}
+div.absolute-badge-right .badge-h5 {
+  position: absolute;
+  white-space: nowrap;
+  right: 0;
+  font-size: 16px;
+  line-height: 24px;
+  margin: 14px 0px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background-color: #fafcff;
+}
 .areaClear {
   display: block;
   position: absolute;

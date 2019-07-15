@@ -16,23 +16,6 @@ module.exports = function() {
 	        return;
 	    }
 
-	    /*var k = app.generateKeyFromPassword($('#loginUsername').val(), 'active', $('#loginPassword').val());
-
-	    if (k.pubKey == r.active.key_auths[0][0]) {
-		settings.user = {
-		    id: r.id,
-		    name: r.name,
-		    password: $('#loginPassword').val()
-		};
-
-		$('#loginUsername').val('');
-		$('#loginPassword').val('');
-
-	        app.changeView('view-show', 'screenPin');
-	    } else {
-		$('#password-error').addClass('active');
-	    }*/
-
 	    settings.user = {
 		id: r.id,
 		name: r.name

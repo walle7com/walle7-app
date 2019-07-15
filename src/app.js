@@ -48,6 +48,18 @@ var gws = {
 	ESTIMATE_OUTPUT: '/estimate-output-amount',
 	ESTIMATE_INPUT: '/estimate-input-amount',
 	ID: 'SPARKDEX'
+    },
+    
+    '6': {
+	BASE: 'https://gateway.rudex.org/api/v0_1',
+	COINS_LIST: '/coins',
+	ID: 'RUDEX'
+    },
+    
+    '7': {
+	BASE: 'https://apis.xbts.io/api/v1',
+	COINS_LIST: '/coin',
+	ID: 'XBTSX'
     }
 }
 

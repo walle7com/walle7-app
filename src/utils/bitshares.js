@@ -1,8 +1,3 @@
-module.exports = {
-    getBackedCoins: getBackedCoins
-}
-
-
 function allowedGateway(gateway) {
     return (
         [
@@ -108,7 +103,60 @@ const availableGateways = {
     }
 };
 
-function getBackedCoins({allCoins, tradingPairs, backer}) {
+module.exports = {
+    availableGateways: availableGateways,
+    fetchCoins: fetchCoins,
+    fetchCoinsSimple: fetchCoinsSimple,
+    getDepositAddress: getDepositAddress,
+    validateAddress: validateAddress
+}
+
+async function fetchCoins(gw) {
+    var coins = await $.ajax({
+	url: gw.BASE + gw.COINS_LIST,
+	contentType: 'application/json',
+	dataType: 'json'
+    });
+
+    var tradingPairs = await $.ajax({
+	url: gw.BASE + gw.TRADING_PAIRS,
+	contentType: 'application/json',
+	dataType: 'json'
+    });
+
+    var wallets = await $.ajax({
+	url: gw.BASE + gw.ACTIVE_WALLETS,
+	contentType: 'application/json',
+	dataType: 'json'
+    });
+
+    var backedCoins = getBackedCoins({
+	allCoins: coins,
+	tradingPairs: tradingPairs,
+	backer: gw.ID
+    }).filter(a => !!a.walletType);
+    backedCoins.forEach(a => {
+	a.isAvailable = wallets.indexOf(a.walletType) !== -1;
+    });
+
+    return backedCoins;
+}
+
+async function fetchCoinsSimple(gw) {
+    var coins = await $.ajax({
+	url: gw.BASE + gw.COINS_LIST,
+	contentType: 'application/json',
+	dataType: 'json'
+    });
+
+    coins.forEach(a => {
+	a.isAvailable = true;
+    });
+
+    return coins;
+}
+
+function getBackedCoins({backer, allCoins, tradingPairs}) {
     let gatewayStatus = availableGateways[backer];
     let coins_by_type = {};
 
@@ -171,4 +219,130 @@ function getBackedCoins({allCoins, tradingPairs, backer}) {
         }
     });
     return backedCoins;
+}
+
+async function getDepositAddress({walletType, inputCoinType, outputCoinType, outputAddress, gw}) {
+    switch (gw.ID) {
+	case 'RUDEX':
+	    break;
+	
+	case 'XBTSX':
+	    return getXbtsxDepositAddress({walletType, inputCoinType, outputCoinType, outputAddress, gw});
+	
+	default:
+	    return getCommonDepositAddress({walletType, inputCoinType, outputCoinType, outputAddress, gw});
+    }
+
+}
+
+async function getCommonDepositAddress({walletType, inputCoinType, outputCoinType, outputAddress, gw}) {
+    return $.ajax({
+	url: gw.BASE + '/simple-api/initiate-trade',
+	contentType: 'application/json',
+	type: 'POST',
+	data: JSON.stringify({
+	    inputCoinType: inputCoinType,
+	    outputAddress: outputAddress,
+	    outputCoinType: outputCoinType
+	}),
+	dataType: 'json'
+    });
+}
+
+async function getXbtsxDepositAddress({walletType, inputCoinType, outputCoinType, outputAddress, gw}) {
+    return $.ajax({
+	url: gw.BASE + `/wallets/${walletType}/new-deposit-address`,
+	contentType: 'application/json',
+	type: 'POST',
+	data: JSON.stringify({
+	    inputCoinType: inputCoinType,
+	    outputCoinType: outputCoinType,
+	    outputAddress: outputAddress
+	}),
+	dataType: 'json'
+    });
+}
+
+async function validateAddress({gw, walletType, address}) {
+    switch (gw.ID) {
+	case 'RUDEX':
+	case 'XBTSX':
+	    return _validateAddressSimple({
+		url: gw.BASE,
+		walletType: walletType,
+		newAddress: address
+	    });
+	
+	default:
+	    return _validateAddress({
+		url: gw.BASE,
+		walletType: walletType,
+		newAddress: address
+	    });
+    }
+}
+
+async function _validateAddressSimple({
+    url,
+    walletType,
+    newAddress
+}) {
+    if (!newAddress) return new Promise(res => res());
+    return fetch(url + "/wallets/" + walletType + "/check-address", {
+        method: "post",
+        headers: new Headers({
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        }),
+        body: JSON.stringify({address: newAddress})
+    })
+        .then(reply => reply.json().then(json => json.isValid))
+        .catch(err => {
+            console.log("validate error:", err);
+        });
+}
+
+async function _validateAddress({
+    url,
+    walletType,
+    newAddress,
+    output_coin_type = null,
+    method = null
+}) {
+    if (!newAddress) return new Promise(res => res());
+
+    if (!method || method == "GET") {
+        url +=
+            "/wallets/" +
+            walletType +
+            "/address-validator?address=" +
+            encodeURIComponent(newAddress);
+        if (output_coin_type) {
+            url += "&outputCoinType=" + output_coin_type;
+        }
+        return fetch(url, {
+            method: "get",
+            headers: new Headers({
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            })
+        })
+            .then(reply => reply.json().then(json => json.isValid))
+            .catch(err => {
+                console.log("validate error:", err);
+            });
+    } else if (method == "POST") {
+        return fetch(url + "/wallets/" + walletType + "/check-address", {
+            method: "post",
+            headers: new Headers({
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            }),
+            body: JSON.stringify({address: newAddress})
+        })
+            .then(reply => reply.json().then(json => json.isValid))
+            .catch(err => {
+                console.log("validate error:", err);
+            });
+    }
 }

@@ -187,6 +187,9 @@ try{
 		.removeClass()
 		.addClass('c-' + arg.assetId);
 
+	    $('#modalWithdrawCoins [data-valid-address]').removeClass('active');
+	    $('#modalWithdrawCoins [data-invalid-address]').removeClass('active');
+
 	    if (settings.balances[arg.assetId] && settings.balances[arg.assetId].wallets[btsId]) {
 		data['balance'] = numbers.toFixed(settings.balances[arg.assetId].wallets[btsId].amount);
 		data['usd-balance'] = numbers.shortenNumber(settings.balances[arg.assetId].wallets[btsId].amount * settings.pulse[arg.assetId].pulse.price);
@@ -226,6 +229,40 @@ try{
 	    $('#modalWithdrawCoins [data-view="withdraw"] [data-modal-arg]').attr('data-modal-arg', JSON.stringify(arg));
 	    $('#modalWithdrawCoins [data-view="confirm"] [data-modal-arg]').attr('data-modal-arg', JSON.stringify(arg));
 
+	    $('#modalWithdrawCoins [data-amount-input]').unbind('input.wdraw').bind('input.wdraw', function(e) {
+		var p = settings.assets[arg.assetId].wallets[arg.walletId].btsPrecision;
+        	var t = new RegExp("^((\\s*|[1-9][0-9]*\\.?[0-9]{0," +
+            	    p + "})|(0|(0\\.)[0-9]{0," + p + "}))$").test(e.target.value);
+
+		var s = e.target.value.split('.');
+
+		var m = parseFloat($('#modalWithdrawCoins [data-max-amount]').text());
+
+		if (!t || parseFloat(e.target.value) > m ||
+		    s.length > 1 && s[1].length > settings.assets[arg.assetId].wallets[arg.walletId].btsPrecision) {
+		    $('#modalWithdrawCoins [data-amount-input]').val(v);
+		}
+	    });
+
+	    var v;
+	    $('#modalWithdrawCoins [data-amount-input]').unbind('keypress.wdraw').bind('keypress.wdraw', function(e) {
+		if (!/^[0-9\.]$/.test(e.key)) {
+		    return false;
+		}
+
+		if (e.key == '.' && e.target.value == '') {
+		    e.target.value = '0';
+		}
+		
+		v = e.target.value;
+		var m = v.match(/\./g);
+		var p = m ? m.length : 0;
+		
+		if (e.key == '.' && p > 1) {
+		    return false;
+		}
+	    });
+
 	    var fees = await Apis.instance().db_api().exec('get_objects', [['2.0.0']]);
 	    var cer = await Apis.instance().db_api().exec('lookup_asset_symbols', [[btsId]]);
 	    var userAcc = await Apis.instance().db_api().exec('get_full_accounts', [[settings.user.id], true]);
@@ -252,39 +289,39 @@ try{
 		data['service-fee'] = numbers.floatify(fees[0].parameters.current_fees.parameters[0][1].fee / 10 ** 5, 5);
 		data['usd-service-fee'] = numbers.floatify(data['service-fee'] *
 		    settings.pulse[9].pulse.price, 2);
+
+		$('#modalWithdrawCoins [data-address-input]').unbind('blur.wdraw').bind('blur.wdraw', async function() {
+		    var address = $(this).val()
+		    var r = await Apis.instance().db_api().exec("lookup_accounts", [address, 50]);
+
+		    var account = r.find(
+			function(a) {
+			    if (a[0] === address) {
+				return true;
+			    }
+			    return false;
+			}
+		    );
+
+		    if (!!account) {
+			$('#modalWithdrawCoins [data-invalid-address]').removeClass('active');
+			$('#modalWithdrawCoins [data-valid-address]').addClass('active');
+		    } else {
+			$('#modalWithdrawCoins [data-valid-address]').removeClass('active');
+			$('#modalWithdrawCoins [data-invalid-address]').addClass('active');
+		    }
+		});
 	    } else {
 		fee = (fees[0].parameters.current_fees.parameters[0][1].fee +
 		    fees[0].parameters.current_fees.parameters[0][1].price_per_kbyte * 0.2) *
 		    fee / 10 ** cer[0].precision;
 		fee = fee.toFixed(cer[0].precision);
 
-		var allCoins = await $.ajax({
-		    url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].COINS_LIST,
-		    contentType: 'application/json',
-		    dataType: 'json'
-		});
-
-		var tradingPairs = await $.ajax({
-		    url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].TRADING_PAIRS,
-		    contentType: 'application/json',
-		    dataType: 'json'
-		});
-
-		var wallets = await $.ajax({
-		    url: app.gws[arg.walletId].BASE + app.gws[arg.walletId].ACTIVE_WALLETS,
-		    contentType: 'application/json',
-		    dataType: 'json'
-		});
-
-		var backedCoins = bitshares.getBackedCoins({
-		    allCoins: allCoins,
-		    tradingPairs: tradingPairs,
-		    backer: app.gws[arg.walletId].ID
-		}).filter(a => !!a.walletType);
-        	    backedCoins.forEach(a => {
-            		a.isAvailable = wallets.indexOf(a.walletType) !== -1;
-        	});
-
+		if (!!bitshares.availableGateways[app.gws[arg.walletId].ID].isSimple) {
+		    var backedCoins = await bitshares.fetchCoinsSimple(app.gws[arg.walletId]);
+		} else {
+		    var backedCoins = await bitshares.fetchCoins(app.gws[arg.walletId]);
+		}
 
 		var backingAsset = null;
 		for (var item of backedCoins) {
@@ -326,6 +363,23 @@ try{
 		}
 		data['service-fee'] = serviceFee;
 		data['usd-service-fee'] = numbers.floatify(serviceFee * settings.pulse[arg.assetId].pulse.price, 2);
+		
+		$('#modalWithdrawCoins [data-address-input]').unbind('blur.wdraw').bind('blur.wdraw', async function() {
+		    var r = await bitshares.validateAddress({
+			gw: app.gws[arg.walletId],
+			walletType: backingAsset.walletType,
+			address: $('#modalWithdrawCoins [data-address-input]').val()
+		    });
+
+		    if (!!r) {
+			$('#modalWithdrawCoins [data-invalid-address]').removeClass('active');
+			$('#modalWithdrawCoins [data-valid-address]').addClass('active');
+		    } else {
+			$('#modalWithdrawCoins [data-valid-address]').removeClass('active');
+			$('#modalWithdrawCoins [data-invalid-address]').addClass('active');
+		    }
+		    console.log(r);
+		});
 	    }
 
 
@@ -555,6 +609,7 @@ try{
 		    $('#modalWithdrawCoins .preloader').addClass('active');
 
 		    //await app.wait(3000);
+		    //console.log(trx);
 		    var r = await trx.broadcast();
 		    console.log(r);
 
