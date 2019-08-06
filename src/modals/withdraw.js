@@ -176,6 +176,7 @@ try{
 
 	    var asset = settings.assets[arg.assetId];
 	    var btsId = settings.assets[arg.assetId].wallets[arg.walletId].btsId;
+	    var sendType;
 
 	    var data = {
 		'name': asset.name,
@@ -187,7 +188,8 @@ try{
 		.removeClass()
 		.addClass('c-' + arg.assetId);
 
-	    $('#modalWithdrawCoins [data-valid-address]').removeClass('active');
+	    $('#modalWithdrawCoins [data-valid-bts-address]').removeClass('active');
+	    $('#modalWithdrawCoins [data-valid-ext-address]').removeClass('active');
 	    $('#modalWithdrawCoins [data-invalid-address]').removeClass('active');
 
 	    if (settings.balances[arg.assetId] && settings.balances[arg.assetId].wallets[btsId]) {
@@ -268,55 +270,11 @@ try{
 	    var userAcc = await Apis.instance().db_api().exec('get_full_accounts', [[settings.user.id], true]);
 	    console.log(cer);
 
-	    var fee = cer[0].options.core_exchange_rate.quote.amount /
-		cer[0].options.core_exchange_rate.base.amount;
+	    /*var fee = cer[0].options.core_exchange_rate.quote.amount /
+		cer[0].options.core_exchange_rate.base.amount;*/
 
-	    // BTS assets
-	    if (asset.wallets[1]) {
-		fee = (fees[0].parameters.current_fees.parameters[0][1].fee) *
-		    fee / 10 ** cer[0].precision;
-		fee = fee.toFixed(cer[0].precision);
-
-		data['min-amount'] = 0.00001;
-
-		if (settings.balances[arg.assetId] && settings.balances[arg.assetId].wallets[btsId]) {
-		    data['max-amount'] = numbers.floatify(settings.balances[arg.assetId].wallets[btsId].amount, 5);
-		} else {
-		    data['max-amount'] = 0;
-		}
-		
-		data['fee-symbol'] = settings.assets[9].symbol;
-		data['service-fee'] = numbers.floatify(fees[0].parameters.current_fees.parameters[0][1].fee / 10 ** 5, 5);
-		data['usd-service-fee'] = numbers.floatify(data['service-fee'] *
-		    settings.pulse[9].pulse.price, 2);
-
-		$('#modalWithdrawCoins [data-address-input]').unbind('blur.wdraw').bind('blur.wdraw', async function() {
-		    var address = $(this).val()
-		    var r = await Apis.instance().db_api().exec("lookup_accounts", [address, 50]);
-
-		    var account = r.find(
-			function(a) {
-			    if (a[0] === address) {
-				return true;
-			    }
-			    return false;
-			}
-		    );
-
-		    if (!!account) {
-			$('#modalWithdrawCoins [data-invalid-address]').removeClass('active');
-			$('#modalWithdrawCoins [data-valid-address]').addClass('active');
-		    } else {
-			$('#modalWithdrawCoins [data-valid-address]').removeClass('active');
-			$('#modalWithdrawCoins [data-invalid-address]').addClass('active');
-		    }
-		});
-	    } else {
-		fee = (fees[0].parameters.current_fees.parameters[0][1].fee +
-		    fees[0].parameters.current_fees.parameters[0][1].price_per_kbyte * 0.2) *
-		    fee / 10 ** cer[0].precision;
-		fee = fee.toFixed(cer[0].precision);
-
+	    // external
+	    if (!asset.wallets[1]) {
 		if (!!bitshares.availableGateways[app.gws[arg.walletId].ID].isSimple) {
 		    var backedCoins = await bitshares.fetchCoinsSimple(app.gws[arg.walletId]);
 		} else {
@@ -342,7 +300,46 @@ try{
 		
 		    return false;
 		}
+	    }
+
+	    function setBTSFee() {
+		console.log('setBTSFee');
+		var fee = cer[0].options.core_exchange_rate.quote.amount /
+		    cer[0].options.core_exchange_rate.base.amount;
+
+		fee = (fees[0].parameters.current_fees.parameters[0][1].fee) *
+		    fee / 10 ** cer[0].precision;
+		fee = fee.toFixed(cer[0].precision);
+
+		data['min-amount'] = 0.00001;
+
+		if (settings.balances[arg.assetId] && settings.balances[arg.assetId].wallets[btsId]) {
+		    data['max-amount'] = numbers.floatify(settings.balances[arg.assetId].wallets[btsId].amount, 5);
+		} else {
+		    data['max-amount'] = 0;
+		}
+
+		data['fee-symbol'] = settings.assets[9].symbol;
+		data['service-fee'] = numbers.floatify(fees[0].parameters.current_fees.parameters[0][1].fee / 10 ** 5, 5);
+		data['usd-service-fee'] = numbers.floatify(data['service-fee'] *
+		    settings.pulse[9].pulse.price, 2);
 		
+		sendType = 'bts';
+
+		updateView();
+	    }
+
+	    function setExternalFee() {
+		console.log('setExternalFee');
+		var fee = cer[0].options.core_exchange_rate.quote.amount /
+		    cer[0].options.core_exchange_rate.base.amount;
+
+		fee = (fees[0].parameters.current_fees.parameters[0][1].fee +
+		    fees[0].parameters.current_fees.parameters[0][1].price_per_kbyte * 0.2) *
+		    fee / 10 ** cer[0].precision;
+		fee = fee.toFixed(cer[0].precision);
+
+
 		var minDeposit = 0;
 		if (!!backingAsset) {
 		    if (!!backingAsset.minAmount && !!backingAsset.precision) {
@@ -364,28 +361,80 @@ try{
 		data['service-fee'] = serviceFee;
 		data['usd-service-fee'] = numbers.floatify(serviceFee * settings.pulse[arg.assetId].pulse.price, 2);
 		
-		$('#modalWithdrawCoins [data-address-input]').unbind('blur.wdraw').bind('blur.wdraw', async function() {
-		    var r = await bitshares.validateAddress({
+		sendType = 'ext';
+		
+		updateView();
+	    }
+
+	    $('#modalWithdrawCoins [data-valid-bts-address]').unbind('click.wdraw').bind('click.wdraw', async function() {
+		setBTSFee();
+
+		$('#modalWithdrawCoins [data-valid-bts-address]').addClass('selected');
+		$('#modalWithdrawCoins [data-valid-ext-address]').removeClass('selected');
+	    });
+
+	    $('#modalWithdrawCoins [data-valid-ext-address]').unbind('click.wdraw').bind('click.wdraw', async function() {
+		setExternalFee();
+		
+		$('#modalWithdrawCoins [data-valid-ext-address]').addClass('selected');
+		$('#modalWithdrawCoins [data-valid-bts-address]').removeClass('selected');
+	    });
+
+	    $('#modalWithdrawCoins [data-address-input]').unbind('blur.wdraw').bind('blur.wdraw', async function() {
+		var address = $(this).val()
+		var r = await Apis.instance().db_api().exec("lookup_accounts", [address, 50]);
+
+		var btsAccount = r.find(
+		    function(a) {
+			if (a[0] === address) {
+			    return true;
+			}
+			return false;
+		    }
+		);
+
+		if (!asset.wallets[1]) {
+		    var ext = await bitshares.validateAddress({
 			gw: app.gws[arg.walletId],
 			walletType: backingAsset.walletType,
 			address: $('#modalWithdrawCoins [data-address-input]').val()
 		    });
+		} else {
+		    var ext = null;
+		}
+		
+		if (btsAccount) {
+		    setBTSFee();
+		} else {
+		    setExternalFee();
+		}
 
-		    if (!!r) {
-			$('#modalWithdrawCoins [data-invalid-address]').removeClass('active');
-			$('#modalWithdrawCoins [data-valid-address]').addClass('active');
-		    } else {
-			$('#modalWithdrawCoins [data-valid-address]').removeClass('active');
-			$('#modalWithdrawCoins [data-invalid-address]').addClass('active');
-		    }
-		    console.log(r);
-		});
+		$('#modalWithdrawCoins [data-invalid-address]').removeClass('active');
+
+		if (btsAccount) {
+		    $('#modalWithdrawCoins [data-valid-bts-address]').addClass('active').click();
+		} else {
+		    $('#modalWithdrawCoins [data-valid-bts-address]').removeClass('active');
+		}
+		
+		if (ext) {
+		    $('#modalWithdrawCoins [data-valid-ext-address]').addClass('active').click();
+		} else {
+		    $('#modalWithdrawCoins [data-valid-ext-address]').removeClass('active');
+		}
+
+		if (!btsAccount && !ext) {
+		    $('#modalWithdrawCoins [data-invalid-address]').addClass('active');
+		}
+	    });
+
+
+	    function updateView() {
+		for (var k in data) {
+		    $('#modalWithdrawCoins [data-' + k + ']').text(data[k]);
+		}
 	    }
-
-
-	    for (var k in data) {
-		$('#modalWithdrawCoins [data-' + k + ']').text(data[k]);
-	    }
+	    updateView();
 
 	    if (data.balance <= data['service-fee']) {
 		await app.changeView('multi-view-modal-show', {
@@ -400,7 +449,7 @@ try{
 	    this.prepareTransaction = async (trx, key) => {
 try{
 		// BTS assets
-		if (asset.wallets[1]) {
+		if (asset.wallets[1] || sendType == 'bts') {
 		    var dexAcc = await Apis.instance().db_api().exec('get_full_accounts', [[$('#modalWithdrawCoins [data-address-input]').val()], true]);
 
 		    var op = {
@@ -416,7 +465,7 @@ try{
 			}
 		    };
 		} else {
-		    var dexAcc = await Apis.instance().db_api().exec('get_full_accounts', [[backingAsset.intermediateAccount], true]);
+		    var dexAcc = await Apis.instance().db_api().exec('get_full_accounts', [[bitshares.getIntermediateAccount(backingAsset, app.gws[arg.walletId].ID)], true]);
 
 		    console.log('gate fee: ' + backingAsset.gateFee);
 

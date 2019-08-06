@@ -822,7 +822,7 @@ try {
 			},
 			seller: userAcc[0][1].account.id,
 			amount_to_sell: {
-			    amount: sellAmount2,
+			    amount: sellAmount2 - 1,
 			    asset_id: '1.3.0'
 			},
 			min_to_receive: {

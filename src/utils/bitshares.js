@@ -108,7 +108,8 @@ module.exports = {
     fetchCoins: fetchCoins,
     fetchCoinsSimple: fetchCoinsSimple,
     getDepositAddress: getDepositAddress,
-    validateAddress: validateAddress
+    validateAddress: validateAddress,
+    getIntermediateAccount: getIntermediateAccount
 }
 
 async function fetchCoins(gw) {
@@ -219,6 +220,12 @@ function getBackedCoins({backer, allCoins, tradingPairs}) {
         }
     });
     return backedCoins;
+}
+
+function getIntermediateAccount(coin, gw) {
+    if (!coin) return undefined;
+    else if (gw === "RUDEX") return coin.issuerId || coin.issuer;
+    else return coin.intermediateAccount || coin.issuer;
 }
 
 async function getDepositAddress({walletType, inputCoinType, outputCoinType, outputAddress, gw}) {

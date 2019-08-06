@@ -1161,14 +1161,47 @@ div.absolute-input-right .input-h5 {
   padding: 0 2px;
 }
 div.absolute-input-right .areaBadge {
-  position: absolute;
+  position: relative;
   right: 0;
   margin: 8px 0;
-  padding: 8px 16px;
   text-align: center;
   border-radius: 6px;
-  background-color: rgba(229,237,249,1);
+  background-color: rgba(255,255,255,1);
+  border: 2px solid rgba(18, 83, 252, 0.35);
   box-shadow: inset 0px 0px 0px 2px rgba(18,83,252,0);
+}
+div.absolute-input-right .areaBadge.op {
+  display: none;
+}
+div.absolute-input-right .areaBadge.op.active {
+  display: inline-block;
+}
+div.absolute-input-right .areaValid.op.active {
+  cursor: pointer;
+}
+div.absolute-input-right .areaValid.op.active.selected {
+  cursor: default;
+}
+div.absolute-input-right .areaValid.op.active:hover {
+  border: 2px solid rgba(18, 83, 252, 0.7);
+}
+div.absolute-input-right .areaValid.op.active.selected:hover {
+  border: 2px solid rgba(18, 83, 252, 1);
+}
+div.absolute-input-right .areaBadge.selected {
+  border: 2px solid rgba(18, 83, 252, 1);
+}
+div.absolute-input-right .areaBadge .icoin {
+  content: '';
+  position: absolute;
+  right: 6px;
+  top: 5px;
+  width: 26px;
+  height: 26px;
+  background-size: 26px;
+  background-position: 50%;
+  background-repeat: no-repeat;
+  border-radius: 100%;
 }
 div.absolute-input-right .areaError {
   height: 40px;
@@ -1183,9 +1216,9 @@ div.absolute-input-right .areaError {
 }
 div.absolute-input-right .areaValid {
   height: 40px;
-  width: 56px;
-  background-image: url(i/ic_content_check.png);
-  background-position: 50%;
+  width: 62px;
+  background-image: url(i/ic_arrow_right.png);
+  background-position: 2px 50%;
   background-size: 24px;
   background-repeat: no-repeat;
   -webkit-transition: all 0.2s ease;

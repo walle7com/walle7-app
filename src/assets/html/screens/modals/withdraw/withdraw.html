@@ -10,8 +10,15 @@
             <div class="row">
               <input type="text" spellcheck="false" class="input row-wide absolute-input-right" placeholder="Paste address" value="" data-address-input />
               <div class="absolute-input-right">
-                <span class="areaBadge areaError op" data-invalid-address></span>
-                <span class="areaBadge areaValid op" data-valid-address></span>
+                <span class="areaBadge areaError op fade-in" data-invalid-address></span>
+                <span class="areaBadge areaValid op fade-in c-9 selected" data-valid-bts-address>
+                  <span class="icoin"></span>
+                </span>
+                <span class="areaBadge areaValid op fade-in" data-valid-ext-address>
+                  <span class="c1" data-id>
+                    <span class="icoin"></span>
+                  </span>
+                </span>
               </div>
             </div>
           </div>
@@ -32,7 +39,7 @@
             <div class="row up-4">
               <h5>
                 <i class="text-grey">Min.</i> 
-                <i class="text-dashed" data-min-amount>0.0006</i> 
+                <i class="text-dashed" data-min-amount>0.0006</i>
                 <i class="text-grey" data-symbol>BTC</i>
               </h5>
               <h5 class="absolute-top-right">
